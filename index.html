@@ -1,0 +1,660 @@
+
+<h2 class="sr-only">Application complète d'administration des cartes de débit Edahabiya</h2>
+<style>
+:root{--dg:#0A4A2E;--mg:#1A6B45;--gold:#C8960C;--gl:#F5D670;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body,div,span,input,select,button,table,td,th{font-family:var(--font-sans);}
+.app{padding:1.5rem 0;}
+.view{display:none;} .view.active{display:block;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:0.5px solid var(--color-border-tertiary);}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-logo{width:36px;height:36px;border-radius:8px;background:#0A4A2E;display:flex;align-items:center;justify-content:center;}
+.brand-logo span{color:#F5D670;font-weight:500;font-size:13px;}
+.brand-name{font-size:17px;font-weight:500;color:var(--color-text-primary);}
+.brand-sub{font-size:12px;color:var(--color-text-secondary);}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;}
+.metric .lbl{font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;}
+.metric .val{font-size:22px;font-weight:500;color:var(--color-text-primary);}
+.metric .sub{font-size:11px;margin-top:4px;color:var(--color-text-secondary);}
+.sub.up{color:var(--color-text-success);} .sub.dn{color:var(--color-text-danger);}
+.search-row{display:flex;gap:10px;align-items:center;margin-bottom:1rem;}
+.sw{flex:1;position:relative;}
+.sw i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--color-text-secondary);font-size:16px;}
+.sw input{width:100%;padding:8px 12px 8px 34px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:13px;color:var(--color-text-primary);}
+select.fsel{padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:13px;color:var(--color-text-primary);cursor:pointer;}
+.twrap{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;}
+.ct{width:100%;border-collapse:collapse;}
+.ct th{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-align:left;padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);white-space:nowrap;}
+.ct td{padding:10px 12px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;color:var(--color-text-primary);vertical-align:middle;}
+.ct tr:hover td{background:var(--color-background-secondary);}
+.cprev{display:flex;align-items:center;justify-content:center;width:40px;height:26px;border-radius:4px;background:#0A4A2E;border:0.5px solid #C8960C;position:relative;overflow:hidden;}
+.cprev::after{content:'◎';color:#F5D670;font-size:9px;position:absolute;right:3px;}
+.cprev span{color:#F5D670;font-size:7px;font-weight:500;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.ba{background:var(--color-background-success);color:var(--color-text-success);}
+.bb{background:var(--color-background-danger);color:var(--color-text-danger);}
+.be{background:var(--color-background-secondary);color:var(--color-text-secondary);}
+.bp{background:var(--color-background-warning);color:var(--color-text-warning);}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+.da{background:var(--color-text-success);} .db{background:var(--color-text-danger);}
+.de{background:var(--color-text-secondary);} .dp{background:var(--color-text-warning);}
+.abts{display:flex;gap:4px;}
+.ab{background:none;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:4px 8px;cursor:pointer;color:var(--color-text-secondary);font-size:12px;display:flex;align-items:center;gap:4px;}
+.ab:hover{background:var(--color-background-secondary);color:var(--color-text-primary);}
+.ab.dng:hover{border-color:var(--color-border-danger);color:var(--color-text-danger);}
+.tfoot{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:0.5px solid var(--color-border-tertiary);}
+.pinfo{font-size:12px;color:var(--color-text-secondary);}
+.pbtns{display:flex;gap:4px;}
+.pgb{background:none;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:4px 10px;cursor:pointer;font-size:12px;color:var(--color-text-primary);}
+.pgb.act{background:#0A4A2E;color:#F5D670;border-color:#0A4A2E;}
+.btn-primary{background:#0A4A2E;color:#F5D670;border:none;border-radius:var(--border-radius-md);padding:8px 14px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary:hover{opacity:0.88;}
+.btn-outline{background:none;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 14px;font-size:13px;cursor:pointer;color:var(--color-text-primary);display:inline-flex;align-items:center;gap:6px;}
+.btn-outline:hover{background:var(--color-background-secondary);}
+.btn-danger{background:none;border:0.5px solid var(--color-border-danger);border-radius:var(--border-radius-md);padding:8px 14px;font-size:13px;cursor:pointer;color:var(--color-text-danger);display:inline-flex;align-items:center;gap:6px;}
+.btn-danger:hover{background:var(--color-background-danger);}
+.sec{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem;}
+.sec-t{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.irow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.irow:last-child{border-bottom:none;}
+.ilbl{font-size:12px;color:var(--color-text-secondary);display:flex;align-items:center;gap:6px;}
+.ival{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.ival.mono{font-family:var(--font-mono);font-weight:400;font-size:12px;}
+.cv{width:100%;aspect-ratio:1.586;background:#0A4A2E;border-radius:10px;border:1px solid #C8960C;padding:18px;position:relative;overflow:hidden;}
+.cv::before{content:'';position:absolute;top:-25%;right:-5%;width:55%;aspect-ratio:1;border-radius:50%;background:rgba(200,150,12,0.07);}
+.cvl{color:#F5D670;font-size:10px;font-weight:500;letter-spacing:0.4px;}
+.cvc{width:30px;height:22px;background:#C8960C;border-radius:4px;margin:12px 0 10px;}
+.cvn{color:#F5D670;font-size:13px;letter-spacing:2px;font-weight:500;}
+.cvb{display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;}
+.cvna{color:rgba(245,214,112,0.8);font-size:10px;letter-spacing:0.5px;}
+.cvcc{color:rgba(245,214,112,0.5);font-size:9px;margin-top:2px;}
+.cve{color:#F5D670;font-size:10px;}
+.tx{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.tx:last-child{border-bottom:none;}
+.txi{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.txi.d{background:var(--color-background-danger);color:var(--color-text-danger);}
+.txi.c{background:var(--color-background-success);color:var(--color-text-success);}
+.txn{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.txd{font-size:11px;color:var(--color-text-secondary);}
+.txa{font-size:13px;font-weight:500;}
+.txa.neg{color:var(--color-text-danger);} .txa.pos{color:var(--color-text-success);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.field{margin-bottom:12px;}
+.field:last-child{margin-bottom:0;}
+.field label{display:block;font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;}
+.field input,.field select{width:100%;padding:8px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);font-size:13px;color:var(--color-text-primary);}
+.cvv-wrap{position:relative;}
+.cvv-wrap input{padding-right:72px;font-family:var(--font-mono);letter-spacing:4px;font-size:15px;}
+.cvv-acts{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;gap:4px;}
+.ibt{background:none;border:0.5px solid var(--color-border-secondary);border-radius:6px;padding:3px 7px;cursor:pointer;color:var(--color-text-secondary);font-size:13px;}
+.ibt:hover{background:var(--color-background-primary);color:var(--color-text-primary);}
+.str{display:flex;gap:4px;align-items:center;margin-top:5px;}
+.sb{height:3px;flex:1;border-radius:2px;background:var(--color-border-tertiary);}
+.sb.fill{background:var(--color-text-success);}
+.slbl{font-size:11px;color:var(--color-text-secondary);min-width:60px;}
+.info-note{background:var(--color-background-info);border:0.5px solid var(--color-border-info);border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;color:var(--color-text-info);display:flex;gap:8px;align-items:flex-start;margin-bottom:12px;}
+.warn-note{background:var(--color-background-warning);border:0.5px solid var(--color-border-warning);border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px;color:var(--color-text-warning);display:flex;gap:8px;align-items:flex-start;margin-top:10px;}
+.hbox{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;margin-top:8px;display:none;}
+.hlbl{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;}
+.hval{font-family:var(--font-mono);font-size:10px;color:var(--color-text-secondary);word-break:break-all;}
+.step-bar{display:flex;align-items:center;margin-bottom:1.5rem;}
+.step{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary);}
+.step.active{color:var(--color-text-primary);font-weight:500;}
+.step.done{color:var(--color-text-success);}
+.step-num{width:24px;height:24px;border-radius:50%;border:0.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.step.active .step-num{background:#0A4A2E;color:#F5D670;border-color:#0A4A2E;}
+.step.done .step-num{background:var(--color-background-success);color:var(--color-text-success);border-color:var(--color-border-success);}
+.step-line{flex:1;height:0.5px;background:var(--color-border-tertiary);margin:0 8px;}
+.panel{display:none;} .panel.active{display:block;}
+.ctabs{display:flex;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);overflow:hidden;margin-bottom:1rem;}
+.ctab{flex:1;padding:7px;font-size:12px;background:none;border:none;cursor:pointer;color:var(--color-text-secondary);}
+.ctab.active{background:var(--color-background-secondary);color:var(--color-text-primary);font-weight:500;}
+.card-back{width:100%;aspect-ratio:1.586;background:#0d3d25;border-radius:10px;border:1px solid #C8960C;overflow:hidden;position:relative;}
+.stripe{width:100%;height:28%;background:#061f13;margin-top:15%;}
+.sig-area{margin:7% 5% 0;display:flex;align-items:center;gap:8px;}
+.sig-box{flex:1;height:26px;background:repeating-linear-gradient(90deg,#e8e0d0 0,#e8e0d0 8px,#d4cbbf 8px,#d4cbbf 16px);border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;}
+.cvv-disp{font-family:monospace;font-size:14px;font-weight:700;color:#1a1a1a;letter-spacing:3px;}
+.del-modal-bg{background:rgba(0,0,0,0.45);border-radius:var(--border-radius-lg);padding:3rem 2rem;display:none;align-items:center;justify-content:center;min-height:220px;}
+.del-modal-bg.open{display:flex;}
+.del-modal{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.5rem;max-width:360px;width:100%;text-align:center;}
+.gen-btn{width:100%;padding:8px;background:none;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;color:var(--color-text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;}
+.gen-btn:hover{background:var(--color-background-secondary);}
+.success-icon{width:52px;height:52px;border-radius:50%;background:var(--color-background-success);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:24px;color:var(--color-text-success);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.mcard{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.9rem 1rem;}
+.mcard .ml{font-size:11px;color:var(--color-text-secondary);margin-bottom:5px;}
+.mcard .mv{font-size:20px;font-weight:500;color:var(--color-text-primary);}
+.mcard .ms{font-size:11px;color:var(--color-text-secondary);margin-top:3px;}
+.btn-row{display:flex;gap:10px;margin-top:4px;}
+.btn-row .btn-primary{flex:1;justify-content:center;}
+.sumrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:13px;}
+.sumrow:last-child{border-bottom:none;}
+.sumlbl{color:var(--color-text-secondary);}
+.sumval{font-weight:500;color:var(--color-text-primary);}
+.action-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:1.25rem;}
+</style>
+
+<div class="app">
+
+<!-- ═══════════════ VUE : TABLEAU DE BORD ═══════════════ -->
+<div class="view active" id="v-dash">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo"><span>DA</span></div>
+      <div>
+        <div class="brand-name">Administration Edahabiya</div>
+        <div class="brand-sub">Gestion des cartes de débit CCP</div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="showView('v-new');initNew()">
+      <i class="ti ti-plus" aria-hidden="true"></i> Nouvelle carte
+    </button>
+  </div>
+
+  <div class="metrics">
+    <div class="metric"><div class="lbl">Total cartes</div><div class="val" id="m-total">0</div><div class="sub up"><i class="ti ti-trending-up" style="font-size:11px"></i> +34 ce mois</div></div>
+    <div class="metric"><div class="lbl">Cartes actives</div><div class="val" id="m-actif">0</div><div class="sub">du total</div></div>
+    <div class="metric"><div class="lbl">Cartes bloquées</div><div class="val" id="m-bloque">0</div><div class="sub dn"><i class="ti ti-trending-up" style="font-size:11px"></i> +12 semaine</div></div>
+    <div class="metric"><div class="lbl">Expirées</div><div class="val" id="m-expire">0</div><div class="sub">À renouveler</div></div>
+  </div>
+
+  <div class="search-row">
+    <div class="sw"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="srch" placeholder="Rechercher nom, N° carte ou CCP..." oninput="filterT()"/></div>
+    <select class="fsel" id="sf-stat" onchange="filterT()">
+      <option value="">Tous les statuts</option>
+      <option>Actif</option><option>Bloqué</option><option>Expiré</option><option>En attente</option>
+    </select>
+    <select class="fsel" id="sf-ag" onchange="filterT()">
+      <option value="">Toutes les agences</option>
+      <option>Alger Centre</option><option>Bab El Oued</option><option>Hussein Dey</option><option>Kouba</option>
+    </select>
+  </div>
+
+  <div class="twrap">
+    <table class="ct">
+      <thead><tr>
+        <th>Carte</th><th>Titulaire</th><th>N° carte</th><th>CCP</th>
+        <th>Agence</th><th>Expiration</th><th>Statut</th><th>Actions</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="tfoot">
+      <div class="pinfo" id="pinfo"></div>
+      <div class="pbtns" id="pbtns"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ VUE : DÉTAILS ═══════════════ -->
+<div class="view" id="v-detail">
+  <button class="btn-outline" style="margin-bottom:1.25rem;" onclick="showView('v-dash')">
+    <i class="ti ti-arrow-left" aria-hidden="true"></i> Retour
+  </button>
+  <div style="display:flex;align-items:center;gap:16px;margin-bottom:1.5rem;">
+    <div id="d-avatar" style="width:52px;height:52px;border-radius:50%;background:#0A4A2E;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:500;color:#F5D670;flex-shrink:0;"></div>
+    <div>
+      <div style="font-size:18px;font-weight:500;color:var(--color-text-primary);" id="d-fullname"></div>
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-top:2px;" id="d-sub"></div>
+    </div>
+  </div>
+  <div class="g3" style="margin-bottom:1rem;">
+    <div class="mcard"><div class="ml">Solde disponible</div><div class="mv">47 250 <span style="font-size:13px;font-weight:400">DA</span></div><div class="ms">Aujourd'hui</div></div>
+    <div class="mcard"><div class="ml">Dépenses ce mois</div><div class="mv">12 800 <span style="font-size:13px;font-weight:400">DA</span></div><div class="ms">8 transactions</div></div>
+    <div class="mcard"><div class="ml">Plafond mensuel</div><div class="mv">150 000 <span style="font-size:13px;font-weight:400">DA</span></div><div class="ms">91% disponible</div></div>
+  </div>
+  <div class="g2">
+    <div>
+      <div class="sec">
+        <div class="sec-t"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:14px"></i>Carte</div>
+        <div class="cv" id="d-card-vis" style="margin-bottom:0;"></div>
+      </div>
+    </div>
+    <div>
+      <div class="sec">
+        <div class="sec-t"><i class="ti ti-user" aria-hidden="true" style="font-size:14px"></i>Données personnelles</div>
+        <div id="d-perso"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-t"><i class="ti ti-settings" aria-hidden="true" style="font-size:14px"></i>Informations techniques</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 2rem;" id="d-tech"></div>
+  </div>
+  <div class="sec">
+    <div class="sec-t"><i class="ti ti-history" aria-hidden="true" style="font-size:14px"></i>Dernières transactions</div>
+    <div class="tx"><div class="txi d"><i class="ti ti-shopping-cart" aria-hidden="true"></i></div><div style="flex:1;margin:0 10px;"><div class="txn">Achat — Jumia</div><div class="txd">17 mai 2026</div></div><div class="txa neg">- 3 200 DA</div></div>
+    <div class="tx"><div class="txi c"><i class="ti ti-arrow-bar-to-down" aria-hidden="true"></i></div><div style="flex:1;margin:0 10px;"><div class="txn">Virement reçu</div><div class="txd">15 mai 2026</div></div><div class="txa pos">+ 20 000 DA</div></div>
+    <div class="tx"><div class="txi d"><i class="ti ti-building" aria-hidden="true"></i></div><div style="flex:1;margin:0 10px;"><div class="txn">Facture Sonelgaz</div><div class="txd">12 mai 2026</div></div><div class="txa neg">- 4 750 DA</div></div>
+    <div class="tx"><div class="txi d"><i class="ti ti-device-mobile" aria-hidden="true"></i></div><div style="flex:1;margin:0 10px;"><div class="txn">Recharge Mobilis</div><div class="txd">10 mai 2026</div></div><div class="txa neg">- 1 000 DA</div></div>
+    <div class="tx"><div class="txi d"><i class="ti ti-droplet" aria-hidden="true"></i></div><div style="flex:1;margin:0 10px;"><div class="txn">Facture ADE</div><div class="txd">8 mai 2026</div></div><div class="txa neg">- 850 DA</div></div>
+  </div>
+  <div class="action-bar">
+    <button class="btn-primary"><i class="ti ti-edit" aria-hidden="true"></i>Modifier</button>
+    <button class="btn-outline"><i class="ti ti-printer" aria-hidden="true"></i>Imprimer</button>
+    <button class="btn-outline" id="d-lock-btn" onclick="toggleLockDetail()"></button>
+    <button class="btn-outline"><i class="ti ti-refresh" aria-hidden="true"></i>Renouveler</button>
+    <button class="btn-danger" onclick="openDelModal()"><i class="ti ti-trash" aria-hidden="true"></i>Supprimer</button>
+  </div>
+  <div class="del-modal-bg" id="del-modal-bg">
+    <div class="del-modal">
+      <div style="font-size:36px;color:var(--color-text-danger);margin-bottom:12px;"><i class="ti ti-alert-circle" aria-hidden="true"></i></div>
+      <div style="font-size:15px;font-weight:500;margin-bottom:8px;">Supprimer cette carte ?</div>
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1.5rem;" id="del-msg"></div>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button class="btn-outline" onclick="closeDelModal()">Annuler</button>
+        <button class="btn-danger" onclick="confirmDelete()"><i class="ti ti-trash" aria-hidden="true"></i>Supprimer définitivement</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ VUE : NOUVELLE CARTE ═══════════════ -->
+<div class="view" id="v-new">
+  <button class="btn-outline" style="margin-bottom:1.25rem;" onclick="showView('v-dash')">
+    <i class="ti ti-arrow-left" aria-hidden="true"></i> Retour
+  </button>
+  <div class="step-bar">
+    <div class="step active" id="ns1"><div class="step-num">1</div>Titulaire</div>
+    <div class="step-line"></div>
+    <div class="step" id="ns2"><div class="step-num">2</div>Sécurité CVV</div>
+    <div class="step-line"></div>
+    <div class="step" id="ns3"><div class="step-num">3</div>Confirmation</div>
+  </div>
+
+  <!-- Panneau 1 -->
+  <div class="panel active" id="np1">
+    <div class="g2">
+      <div>
+        <div id="ncf" class="cv" style="margin-bottom:10px;">
+          <div class="cvl">الجزائرية للبريد &nbsp;|&nbsp; ALGÉRIE POSTE</div>
+          <div class="cvc"></div>
+          <div class="cvn" id="ncv-num">•••• •••• •••• ••••</div>
+          <div class="cvb"><div><div class="cvna" id="ncv-name">NOM PRÉNOM</div><div class="cvcc" id="ncv-ccp">CCP : •••••••••</div></div><div class="cve" id="ncv-exp">MM/AA</div></div>
+        </div>
+        <div id="ncb" class="card-back" style="display:none;margin-bottom:10px;">
+          <div class="stripe"></div>
+          <div class="sig-area">
+            <div style="font-size:9px;color:rgba(245,214,112,0.5);writing-mode:vertical-lr;transform:rotate(180deg)">SIGNATURE</div>
+            <div class="sig-box"><span class="cvv-disp" id="ncvv-back">•••</span></div>
+            <div style="font-size:9px;color:rgba(245,214,112,0.6)">CVV</div>
+          </div>
+        </div>
+        <div class="ctabs">
+          <button class="ctab active" onclick="nface('f',this)"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Recto</button>
+          <button class="ctab" onclick="nface('b',this)"><i class="ti ti-rotate-2" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Verso</button>
+        </div>
+      </div>
+      <div>
+        <div class="sec">
+          <div class="sec-t"><i class="ti ti-user" aria-hidden="true" style="font-size:14px"></i>Titulaire</div>
+          <div class="frow">
+            <div class="field"><label>Nom</label><input id="nf-nom" type="text" placeholder="BENALI" oninput="nupCard()"/></div>
+            <div class="field"><label>Prénom</label><input id="nf-prenom" type="text" placeholder="Mohamed" oninput="nupCard()"/></div>
+          </div>
+          <div class="field"><label>N° national</label><input id="nf-nin" type="text" placeholder="19780412 16 0034" maxlength="16"/></div>
+          <div class="frow">
+            <div class="field"><label>Téléphone</label><input id="nf-tel" type="text" placeholder="0555 123 456"/></div>
+            <div class="field"><label>Email</label><input id="nf-email" type="email" placeholder="nom@gmail.com"/></div>
+          </div>
+        </div>
+        <div class="sec">
+          <div class="sec-t"><i class="ti ti-building-bank" aria-hidden="true" style="font-size:14px"></i>Carte</div>
+          <div class="frow">
+            <div class="field"><label>N° CCP</label><input id="nf-ccp" type="text" placeholder="1234567-89" maxlength="11" oninput="nupCard()"/></div>
+            <div class="field"><label>Agence</label><select id="nf-agence"><option>Alger Centre</option><option>Bab El Oued</option><option>Hussein Dey</option><option>Kouba</option></select></div>
+          </div>
+          <div class="frow">
+            <div class="field"><label>Type</label><select id="nf-type"><option>Edahabiya Classique</option><option>Edahabiya Gold</option></select></div>
+            <div class="field"><label>Plafond</label><select id="nf-plafond"><option>50 000 DA</option><option>150 000 DA</option><option>300 000 DA</option></select></div>
+          </div>
+          <div class="frow">
+            <div class="field"><label>Émission</label><input id="nf-em" type="date"/></div>
+            <div class="field"><label>Expiration</label><input id="nf-exp" type="date" oninput="nupCard()"/></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-primary" style="width:100%;justify-content:center;" onclick="nGoStep2()">
+      <i class="ti ti-arrow-right" aria-hidden="true"></i> Suivant — Sécurité CVV
+    </button>
+  </div>
+
+  <!-- Panneau 2 -->
+  <div class="panel" id="np2">
+    <div class="g2">
+      <div>
+        <div id="ncf2" class="cv" style="margin-bottom:10px;">
+          <div class="cvl">الجزائرية للبريد &nbsp;|&nbsp; ALGÉRIE POSTE</div>
+          <div class="cvc"></div>
+          <div class="cvn" id="ncv-num2">•••• •••• •••• ••••</div>
+          <div class="cvb"><div><div class="cvna" id="ncv-name2">NOM PRÉNOM</div><div class="cvcc" id="ncv-ccp2">CCP : •••••••••</div></div><div class="cve" id="ncv-exp2">MM/AA</div></div>
+        </div>
+        <div id="ncb2" class="card-back" style="display:none;margin-bottom:10px;">
+          <div class="stripe"></div>
+          <div class="sig-area">
+            <div style="font-size:9px;color:rgba(245,214,112,0.5);writing-mode:vertical-lr;transform:rotate(180deg)">SIGNATURE</div>
+            <div class="sig-box"><span class="cvv-disp" id="ncvv-back2">•••</span></div>
+            <div style="font-size:9px;color:rgba(245,214,112,0.6)">CVV</div>
+          </div>
+        </div>
+        <div class="ctabs">
+          <button class="ctab active" onclick="nface2('f',this)"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Recto</button>
+          <button class="ctab" onclick="nface2('b',this)"><i class="ti ti-rotate-2" aria-hidden="true" style="font-size:13px;margin-right:4px"></i>Verso</button>
+        </div>
+      </div>
+      <div>
+        <div class="sec">
+          <div class="sec-t"><i class="ti ti-shield-lock" aria-hidden="true" style="font-size:14px"></i>Sécurité CVV</div>
+          <div class="info-note"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>CVV chiffré AES-256. Non récupérable après validation (PCI DSS).</span></div>
+          <button class="gen-btn" onclick="nGenCvv()"><i class="ti ti-refresh" aria-hidden="true" style="font-size:14px"></i>Générer CVV aléatoire sécurisé</button>
+          <div class="field">
+            <label>CVV (3 chiffres)</label>
+            <div class="cvv-wrap">
+              <input type="password" id="ncvv" maxlength="3" placeholder="•••" oninput="nOnCvv()" autocomplete="off"/>
+              <div class="cvv-acts">
+                <button class="ibt" id="nEyeBtn" onclick="nToggleCvv()"><i class="ti ti-eye" aria-hidden="true"></i></button>
+                <button class="ibt" onclick="nGenCvv()"><i class="ti ti-refresh" aria-hidden="true" style="font-size:12px"></i></button>
+              </div>
+            </div>
+            <div class="str"><div class="sb" id="nsb1"></div><div class="sb" id="nsb2"></div><div class="sb" id="nsb3"></div><span class="slbl" id="nslbl">—</span></div>
+          </div>
+          <div class="hbox" id="nhbox"><div class="hlbl"><i class="ti ti-lock" aria-hidden="true" style="font-size:12px"></i> Hash stocké :</div><div class="hval" id="nhval"></div></div>
+          <div class="warn-note"><i class="ti ti-alert-triangle" aria-hidden="true" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>CVV en clair effacé après chiffrement.</span></div>
+        </div>
+        <div class="sec">
+          <div class="sec-t"><i class="ti ti-settings" aria-hidden="true" style="font-size:14px"></i>Options</div>
+          <div class="field"><label>Paiement en ligne</label><select id="nf-online"><option value="1">Activé</option><option value="0">Désactivé</option></select></div>
+          <div class="field"><label>Paiement international</label><select id="nf-intl"><option value="0">Désactivé</option><option value="1">Activé</option></select></div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-outline" onclick="nGoStep1()"><i class="ti ti-arrow-left" aria-hidden="true"></i>Retour</button>
+      <button class="btn-primary" onclick="nGoStep3()"><i class="ti ti-arrow-right" aria-hidden="true"></i>Suivant — Confirmation</button>
+    </div>
+  </div>
+
+  <!-- Panneau 3 -->
+  <div class="panel" id="np3">
+    <div class="g2" style="margin-bottom:1rem;">
+      <div class="cv" id="np3-card">
+        <div class="cvl">الجزائرية للبريد &nbsp;|&nbsp; ALGÉRIE POSTE</div>
+        <div class="cvc"></div>
+        <div class="cvn" id="np3-num"></div>
+        <div class="cvb"><div><div class="cvna" id="np3-name"></div><div class="cvcc" id="np3-ccp"></div></div><div class="cve" id="np3-exp"></div></div>
+      </div>
+      <div class="sec" style="margin-bottom:0;"><div class="sec-t"><i class="ti ti-list-check" aria-hidden="true" style="font-size:14px"></i>Récapitulatif</div><div id="np3-sum"></div></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-outline" onclick="nGoStep2()"><i class="ti ti-arrow-left" aria-hidden="true"></i>Retour</button>
+      <button class="btn-primary" onclick="nSubmit()"><i class="ti ti-shield-check" aria-hidden="true"></i>Émettre la carte</button>
+    </div>
+  </div>
+
+  <!-- Succès -->
+  <div class="panel" id="np4">
+    <div class="sec" style="text-align:center;padding:2rem 1.25rem;">
+      <div class="success-icon"><i class="ti ti-check" aria-hidden="true"></i></div>
+      <div style="font-size:17px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;">Carte émise avec succès !</div>
+      <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1.5rem;" id="np4-msg"></div>
+      <div class="cv" id="np4-card" style="max-width:300px;margin:0 auto 1.5rem;"></div>
+      <button class="btn-primary" style="margin:0 auto;justify-content:center;" onclick="showView('v-dash');renderTable()">
+        <i class="ti ti-layout-dashboard" aria-hidden="true"></i> Voir le tableau de bord
+      </button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+let DB=[
+  {nom:"Benali Mohamed",num:"4111 2345 6789 0001",ccp:"1234567-89",agence:"Alger Centre",exp:"03/27",statut:"Actif",tel:"0555 123 456",email:"m.benali@gmail.com"},
+  {nom:"Amrani Fatima",num:"4111 2345 6789 0002",ccp:"9876543-21",agence:"Bab El Oued",exp:"07/25",statut:"Expiré",tel:"0661 234 567",email:"f.amrani@gmail.com"},
+  {nom:"Khelil Youcef",num:"4111 2345 6789 0003",ccp:"5551234-56",agence:"Hussein Dey",exp:"11/26",statut:"Actif",tel:"0770 345 678",email:"y.khelil@gmail.com"},
+  {nom:"Bouzid Amina",num:"4111 2345 6789 0004",ccp:"3334455-67",agence:"Kouba",exp:"01/26",statut:"Bloqué",tel:"0550 456 789",email:"a.bouzid@gmail.com"},
+  {nom:"Mansouri Karim",num:"4111 2345 6789 0005",ccp:"7778899-00",agence:"Alger Centre",exp:"09/27",statut:"Actif",tel:"0660 567 890",email:"k.mansouri@gmail.com"},
+  {nom:"Hadj Ahmed Sonia",num:"4111 2345 6789 0006",ccp:"2223344-55",agence:"Bab El Oued",exp:"05/26",statut:"En attente",tel:"0771 678 901",email:"s.hadjahmed@gmail.com"},
+  {nom:"Rahmani Omar",num:"4111 2345 6789 0007",ccp:"6667788-99",agence:"Hussein Dey",exp:"12/27",statut:"Actif",tel:"0551 789 012",email:"o.rahmani@gmail.com"},
+  {nom:"Chergui Nadia",num:"4111 2345 6789 0008",ccp:"4445566-77",agence:"Kouba",exp:"02/25",statut:"Bloqué",tel:"0661 890 123",email:"n.chergui@gmail.com"},
+  {nom:"Boukhalfa Hichem",num:"4111 2345 6789 0009",ccp:"8889900-11",agence:"Alger Centre",exp:"08/27",statut:"Actif",tel:"0770 901 234",email:"h.boukhalfa@gmail.com"},
+  {nom:"Zerrouki Leila",num:"4111 2345 6789 0010",ccp:"1112233-44",agence:"Bab El Oued",exp:"06/26",statut:"Actif",tel:"0550 012 345",email:"l.zerrouki@gmail.com"},
+];
+let filtered=[...DB],page=1,perPage=6,currentIdx=-1,cvvV=false,nCvvRaw='',nGenNum='';
+
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function updateMetrics(){
+  document.getElementById('m-total').textContent=DB.length;
+  document.getElementById('m-actif').textContent=DB.filter(r=>r.statut==='Actif').length;
+  document.getElementById('m-bloque').textContent=DB.filter(r=>r.statut==='Bloqué').length;
+  document.getElementById('m-expire').textContent=DB.filter(r=>r.statut==='Expiré').length;
+}
+
+function sc(s){return {Actif:'ba',Bloqué:'bb',Expiré:'be','En attente':'bp'}[s]||'be';}
+function dc(s){return {Actif:'da',Bloqué:'db',Expiré:'de','En attente':'dp'}[s]||'de';}
+
+function renderTable(){
+  updateMetrics();
+  const q=document.getElementById('srch').value.toLowerCase();
+  const sf=document.getElementById('sf-stat').value;
+  const ag=document.getElementById('sf-ag').value;
+  filtered=DB.filter(r=>
+    (!q||r.nom.toLowerCase().includes(q)||r.num.includes(q)||r.ccp.includes(q))&&
+    (!sf||r.statut===sf)&&(!ag||r.agence===ag)
+  );
+  const s=(page-1)*perPage,e=s+perPage,rows=filtered.slice(s,e);
+  document.getElementById('tbody').innerHTML=rows.map((r,i)=>{
+    const gi=DB.indexOf(r);
+    return `<tr>
+      <td><div class="cprev"><span>DA</span></div></td>
+      <td style="font-weight:500">${r.nom}</td>
+      <td style="font-family:var(--font-mono);font-size:12px;color:var(--color-text-secondary)">${r.num}</td>
+      <td style="font-family:var(--font-mono);font-size:12px">${r.ccp}</td>
+      <td style="font-size:12px;color:var(--color-text-secondary)">${r.agence}</td>
+      <td style="font-size:12px;color:var(--color-text-secondary)">${r.exp}</td>
+      <td><span class="badge ${sc(r.statut)}"><span class="dot ${dc(r.statut)}"></span>${r.statut}</span></td>
+      <td><div class="abts">
+        <button class="ab" onclick="openDetail(${gi})" title="Détails"><i class="ti ti-eye" aria-hidden="true"></i></button>
+        ${r.statut==='Actif'
+          ?`<button class="ab" onclick="toggleStatus(${gi},this)" title="Bloquer"><i class="ti ti-lock" aria-hidden="true"></i></button>`
+          :r.statut==='Bloqué'
+          ?`<button class="ab" onclick="toggleStatus(${gi},this)" title="Débloquer"><i class="ti ti-lock-open" aria-hidden="true"></i></button>`
+          :`<button class="ab" title="Renouveler"><i class="ti ti-refresh" aria-hidden="true"></i></button>`}
+        <button class="ab dng" onclick="quickDelete(${gi})" title="Supprimer"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  const tot=filtered.length,pages=Math.ceil(tot/perPage);
+  document.getElementById('pinfo').textContent=`${s+1}–${Math.min(e,tot)} sur ${tot} cartes`;
+  const pb=document.getElementById('pbtns'); pb.innerHTML='';
+  for(let i=1;i<=pages;i++){const b=document.createElement('button');b.className='pgb'+(i===page?' act':'');b.textContent=i;b.onclick=()=>{page=i;renderTable();};pb.appendChild(b);}
+}
+
+function filterT(){page=1;renderTable();}
+
+function toggleStatus(gi,btn){
+  const r=DB[gi];
+  r.statut=r.statut==='Actif'?'Bloqué':'Actif';
+  renderTable();
+}
+
+function quickDelete(gi){
+  if(confirm('Supprimer la carte de '+DB[gi].nom+' ?')){DB.splice(gi,1);renderTable();}
+}
+
+function openDetail(gi){
+  currentIdx=gi;
+  const r=DB[gi];
+  const ini=r.nom.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('d-avatar').textContent=ini;
+  document.getElementById('d-fullname').innerHTML=r.nom+' <span class="badge '+sc(r.statut)+'" style="font-size:12px;vertical-align:middle;"><span class="dot '+dc(r.statut)+'"></span>'+r.statut+'</span>';
+  document.getElementById('d-sub').textContent='Agence '+r.agence;
+  document.getElementById('d-card-vis').innerHTML=`<div class="cvl">الجزائرية للبريد &nbsp;|&nbsp; ALGÉRIE POSTE</div><div class="cvc"></div><div class="cvn">${r.num}</div><div class="cvb"><div><div class="cvna">${r.nom.toUpperCase()}</div><div class="cvcc">CCP : ${r.ccp}</div></div><div class="cve">${r.exp}</div></div>`;
+  const rows=[['ti-user','Nom complet',r.nom],['ti-phone','Téléphone',r.tel||'—'],['ti-mail','Email',r.email||'—'],['ti-map-pin','Agence',r.agence]];
+  document.getElementById('d-perso').innerHTML=rows.map(([ic,l,v])=>`<div class="irow"><span class="ilbl"><i class="ti ${ic}" aria-hidden="true" style="font-size:14px"></i>${l}</span><span class="ival">${v}</span></div>`).join('');
+  const tech=[['ti-credit-card','N° carte',r.num,true],['ti-calendar','Émission','15 mars 2023',false],['ti-hash','CCP',r.ccp,true],['ti-calendar-event','Expiration',r.exp,false],['ti-credit-card','Type','Edahabiya Classique',false],['ti-shield-check','Paiement en ligne','Activé',false]];
+  document.getElementById('d-tech').innerHTML=tech.map(([ic,l,v,m])=>`<div class="irow"><span class="ilbl"><i class="ti ${ic}" aria-hidden="true" style="font-size:14px"></i>${l}</span><span class="ival${m?' mono':''}">${v}</span></div>`).join('');
+  const lb=document.getElementById('d-lock-btn');
+  lb.innerHTML=r.statut==='Actif'?'<i class="ti ti-lock" aria-hidden="true"></i> Bloquer':'<i class="ti ti-lock-open" aria-hidden="true"></i> Débloquer';
+  showView('v-detail');
+}
+
+function toggleLockDetail(){
+  if(currentIdx<0)return;
+  const r=DB[currentIdx];
+  r.statut=r.statut==='Actif'?'Bloqué':'Actif';
+  openDetail(currentIdx);
+}
+
+function openDelModal(){
+  document.getElementById('del-msg').textContent='La carte de '+DB[currentIdx].nom+' ('+DB[currentIdx].num+') sera supprimée définitivement.';
+  document.getElementById('del-modal-bg').classList.add('open');
+}
+function closeDelModal(){document.getElementById('del-modal-bg').classList.remove('open');}
+function confirmDelete(){
+  DB.splice(currentIdx,1);
+  closeDelModal();
+  showView('v-dash');
+  renderTable();
+}
+
+function initNew(){
+  nGenNum=''; nCvvRaw=''; cvvV=false;
+  ['np1','np2','np3','np4'].forEach(p=>document.getElementById(p).classList.remove('active'));
+  document.getElementById('np1').classList.add('active');
+  nSetStep(1);
+  const t=new Date();
+  document.getElementById('nf-em').value=t.toISOString().split('T')[0];
+  const e=new Date(t); e.setFullYear(e.getFullYear()+4);
+  document.getElementById('nf-exp').value=e.toISOString().split('T')[0];
+  ['nf-nom','nf-prenom','nf-nin','nf-tel','nf-email','nf-ccp'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('ncvv').value=''; nUpdStr('');
+  document.getElementById('nhbox').style.display='none';
+  nupCard();
+}
+
+function nface(f,btn){document.querySelectorAll('#np1 .ctab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('ncf').style.display=f==='f'?'block':'none';document.getElementById('ncb').style.display=f==='b'?'block':'none';}
+function nface2(f,btn){document.querySelectorAll('#np2 .ctab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('ncf2').style.display=f==='f'?'block':'none';document.getElementById('ncb2').style.display=f==='b'?'block':'none';}
+
+function nupCard(){
+  const n=(document.getElementById('nf-nom').value||'NOM').toUpperCase();
+  const p=(document.getElementById('nf-prenom').value||'PRÉNOM').toUpperCase();
+  const ccp=document.getElementById('nf-ccp').value||'•••••••••';
+  const exp=document.getElementById('nf-exp').value;
+  let es='MM/AA';
+  if(exp){const d=new Date(exp);es=(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear().toString().slice(-2);}
+  ['','2'].forEach(s=>{
+    const nn=document.getElementById('ncv-num'+s);if(nn)nn.textContent=nGenNum||'•••• •••• •••• ••••';
+    const cn=document.getElementById('ncv-name'+s);if(cn)cn.textContent=n+' '+p;
+    const cc=document.getElementById('ncv-ccp'+s);if(cc)cc.textContent='CCP : '+ccp;
+    const ce=document.getElementById('ncv-exp'+s);if(ce)ce.textContent=es;
+  });
+}
+
+function nGenCvv(){
+  const a=new Uint8Array(3);crypto.getRandomValues(a);
+  nCvvRaw=(100+(a[0]*a[1]*a[2])%900).toString().slice(0,3).padStart(3,'0');
+  const inp=document.getElementById('ncvv');
+  inp.value=nCvvRaw; inp.type=cvvV?'text':'password';
+  document.getElementById('ncvv-back').textContent=cvvV?nCvvRaw:'•••';
+  document.getElementById('ncvv-back2').textContent=cvvV?nCvvRaw:'•••';
+  nUpdStr(nCvvRaw); nComputeHash(nCvvRaw);
+}
+
+function nOnCvv(){
+  const v=document.getElementById('ncvv').value.replace(/\D/g,'');
+  document.getElementById('ncvv').value=v; nCvvRaw=v;
+  document.getElementById('ncvv-back2').textContent=cvvV?(v||'•••'):'•••';
+  nUpdStr(v); if(v.length===3)nComputeHash(v); else document.getElementById('nhbox').style.display='none';
+}
+
+function nUpdStr(v){
+  ['nsb1','nsb2','nsb3'].forEach((id,i)=>document.getElementById(id).classList.toggle('fill',i<v.length));
+  document.getElementById('nslbl').textContent={0:'—',1:'Trop court',2:'Presque...',3:'Valide ✓'}[v.length]||'—';
+}
+
+async function nComputeHash(cvv){
+  const enc=new TextEncoder();
+  const km=await crypto.subtle.importKey('raw',enc.encode('edahabiya-secret-2026'),{name:'HMAC',hash:'SHA-256'},false,['sign']);
+  const sig=await crypto.subtle.sign('HMAC',km,enc.encode(cvv));
+  const hex=Array.from(new Uint8Array(sig)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  document.getElementById('nhval').textContent='HMAC-SHA256::'+hex;
+  document.getElementById('nhbox').style.display='block';
+}
+
+function nToggleCvv(){
+  cvvV=!cvvV;
+  const inp=document.getElementById('ncvv');
+  inp.type=cvvV?'text':'password';
+  document.getElementById('nEyeBtn').innerHTML=cvvV?'<i class="ti ti-eye-off" aria-hidden="true"></i>':'<i class="ti ti-eye" aria-hidden="true"></i>';
+  document.getElementById('ncvv-back2').textContent=cvvV?(nCvvRaw||'•••'):'•••';
+}
+
+function nSetStep(s){
+  [1,2,3].forEach(i=>{
+    const st=document.getElementById('ns'+i);
+    st.classList.remove('active','done');
+    if(i<s)st.classList.add('done');
+    else if(i===s)st.classList.add('active');
+    const sn=st.querySelector('.step-num');
+    sn.innerHTML=i<s?'<i class="ti ti-check" aria-hidden="true" style="font-size:12px"></i>':i;
+  });
+  [1,2,3].forEach(i=>document.getElementById('np'+i).classList.remove('active'));
+  document.getElementById('np'+s).classList.add('active');
+}
+
+function nGoStep1(){nSetStep(1);}
+
+function nGoStep2(){
+  const nom=document.getElementById('nf-nom').value;
+  const prenom=document.getElementById('nf-prenom').value;
+  const ccp=document.getElementById('nf-ccp').value;
+  if(!nom||!prenom||!ccp){alert('Veuillez remplir nom, prénom et N° CCP.');return;}
+  if(!nGenNum){
+    nGenNum='4111 '+Math.floor(1000+Math.random()*9000)+' '+Math.floor(1000+Math.random()*9000)+' '+Math.floor(1000+Math.random()*9000);
+    nupCard();
+  }
+  nSetStep(2);
+}
+
+function nGoStep3(){
+  if(!nCvvRaw||nCvvRaw.length!==3){alert('Veuillez saisir ou générer un CVV à 3 chiffres.');return;}
+  const nom=document.getElementById('nf-nom').value.toUpperCase();
+  const prenom=document.getElementById('nf-prenom').value.toUpperCase();
+  const ccp=document.getElementById('nf-ccp').value;
+  const agence=document.getElementById('nf-agence').value;
+  const type=document.getElementById('nf-type').value;
+  const plafond=document.getElementById('nf-plafond').value;
+  const exp=document.getElementById('nf-exp').value;
+  let es='—'; if(exp){const d=new Date(exp);es=(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear().toString().slice(-2);}
+  nSetStep(3);
+  document.getElementById('np3-num').textContent=nGenNum;
+  document.getElementById('np3-name').textContent=nom+' '+prenom;
+  document.getElementById('np3-ccp').textContent='CCP : '+ccp;
+  document.getElementById('np3-exp').textContent=es;
+  document.getElementById('np3-sum').innerHTML=[
+    ['Titulaire',prenom+' '+nom],['N° carte',nGenNum],['CCP',ccp],
+    ['Agence',agence],['Type',type],['Expiration',es],['Plafond',plafond],['CVV','••• (chiffré)']
+  ].map(([l,v])=>`<div class="sumrow"><span class="sumlbl">${l}</span><span class="sumval">${v}</span></div>`).join('');
+}
+
+function nSubmit(){
+  const nom=document.getElementById('nf-nom').value;
+  const prenom=document.getElementById('nf-prenom').value;
+  const ccp=document.getElementById('nf-ccp').value;
+  const agence=document.getElementById('nf-agence').value;
+  const exp=document.getElementById('nf-exp').value;
+  let es=''; if(exp){const d=new Date(exp);es=(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear().toString().slice(-2);}
+  DB.unshift({nom:prenom+' '+nom,num:nGenNum,ccp,agence,exp:es,statut:'En attente',tel:document.getElementById('nf-tel').value,email:document.getElementById('nf-email').value});
+  document.getElementById('np3').classList.remove('active');
+  document.getElementById('np4').classList.add('active');
+  document.getElementById('np4-msg').textContent='Carte '+nGenNum+' émise pour '+prenom+' '+nom+'. CVV chiffré et stocké.';
+  document.getElementById('np4-card').innerHTML=`<div class="cvl">الجزائرية للبريد &nbsp;|&nbsp; ALGÉRIE POSTE</div><div class="cvc"></div><div class="cvn">${nGenNum}</div><div class="cvb"><div><div class="cvna">${nom.toUpperCase()} ${prenom.toUpperCase()}</div><div class="cvcc">CCP : ${ccp}</div></div><div class="cve">${es}</div></div>`;
+}
+
+renderTable();
+</script>
