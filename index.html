@@ -1,376 +1,411 @@
 
-<h2 class="sr-only">Application complète Edahabiya — recharge DZD Polygon avec ethers.js et gestion des cartes</h2>
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<h2 class="sr-only">Application DZD Polygon vers carte virtuelle Marqeta sandbox</h2>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body,div,span,input,select,button,table,td,th,a{font-family:var(--font-sans);}
+body,div,span,input,select,button,textarea{font-family:var(--font-sans);}
 .app{padding:1.5rem 0;}
 .view{display:none;}.view.active{display:block;}
 .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:0.5px solid var(--color-border-tertiary);}
 .brand{display:flex;align-items:center;gap:10px;}
-.brand-logo{width:36px;height:36px;border-radius:8px;background:#0A4A2E;display:flex;align-items:center;justify-content:center;}
-.brand-logo span{color:#F5D670;font-weight:500;font-size:13px;}
-.poly-badge{display:inline-flex;align-items:center;gap:5px;background:#EDE7FF;color:#4A2EA3;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:500;}
-.poly-dot{width:8px;height:8px;border-radius:50%;background:#8247E5;display:inline-block;}
-.nav{display:flex;gap:4px;margin-bottom:1.5rem;}
-.nav-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:none;font-size:13px;cursor:pointer;color:var(--color-text-secondary);}
-.nav-btn.active{background:#0A4A2E;color:#F5D670;border-color:#0A4A2E;}
-.nav-btn:hover:not(.active){background:var(--color-background-secondary);color:var(--color-text-primary);}
+.logo{width:36px;height:36px;border-radius:8px;background:#7C3AED;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:500;}
+.badges{display:flex;gap:6px;}
+.badge-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;}
+.poly-pill{background:#EDE7FF;color:#4A2EA3;}
+.marq-pill{background:#E0F2FE;color:#0C447C;}
+.dot-p{width:6px;height:6px;border-radius:50%;background:#8247E5;display:inline-block;}
+.dot-m{width:6px;height:6px;border-radius:50%;background:#378ADD;display:inline-block;}
 .sec{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem;}
 .sec-t{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
 .field{margin-bottom:12px;}.field:last-child{margin-bottom:0;}
 .field label{display:block;font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;}
-.field input,.field select{width:100%;padding:8px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);font-size:13px;color:var(--color-text-primary);}
+.field input,.field select,.field textarea{width:100%;padding:8px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);font-size:13px;color:var(--color-text-primary);}
+.field textarea{resize:none;font-family:var(--font-mono);font-size:11px;line-height:1.6;}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1rem;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 .metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.9rem 1rem;}
 .metric .ml{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;}
 .metric .mv{font-size:18px;font-weight:500;color:var(--color-text-primary);}
 .metric .ms{font-size:11px;color:var(--color-text-secondary);margin-top:2px;}
-.wallet-bar{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:1rem;}
-.w-icon{width:34px;height:34px;border-radius:8px;background:#8247E5;display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;flex-shrink:0;}
-.w-addr{font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary);}
-.w-bal{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-left:auto;}
-.w-bal span{font-size:11px;color:var(--color-text-secondary);margin-left:4px;}
 .btn-primary{background:#0A4A2E;color:#F5D670;border:none;border-radius:var(--border-radius-md);padding:9px 16px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
-.btn-primary:hover{opacity:0.88;}
-.btn-primary:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-primary:hover{opacity:0.88;}.btn-primary:disabled{opacity:0.4;cursor:not-allowed;}
 .btn-poly{background:#8247E5;color:#fff;border:none;border-radius:var(--border-radius-md);padding:9px 16px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
-.btn-poly:hover{opacity:0.88;}
-.btn-poly:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-poly:hover{opacity:0.88;}.btn-poly:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-marq{background:#378ADD;color:#fff;border:none;border-radius:var(--border-radius-md);padding:9px 16px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.btn-marq:hover{opacity:0.88;}.btn-marq:disabled{opacity:0.4;cursor:not-allowed;}
 .btn-outline{background:none;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 14px;font-size:13px;cursor:pointer;color:var(--color-text-primary);display:inline-flex;align-items:center;gap:6px;}
 .btn-outline:hover{background:var(--color-background-secondary);}
-.btn-danger{background:none;border:0.5px solid var(--color-border-danger);border-radius:var(--border-radius-md);padding:6px 10px;font-size:12px;cursor:pointer;color:var(--color-text-danger);display:inline-flex;align-items:center;gap:4px;}
-.btn-danger:hover{background:var(--color-background-danger);}
 .btn-full{width:100%;justify-content:center;}
 .alert{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:var(--border-radius-md);font-size:12px;margin-bottom:10px;}
-.alert-info{background:var(--color-background-info);color:var(--color-text-info);}
-.alert-warn{background:var(--color-background-warning);color:var(--color-text-warning);}
-.alert-ok{background:var(--color-background-success);color:var(--color-text-success);}
-.alert-err{background:var(--color-background-danger);color:var(--color-text-danger);}
+.a-info{background:var(--color-background-info);color:var(--color-text-info);}
+.a-warn{background:var(--color-background-warning);color:var(--color-text-warning);}
+.a-ok{background:var(--color-background-success);color:var(--color-text-success);}
+.a-err{background:var(--color-background-danger);color:var(--color-text-danger);}
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
 .ba{background:var(--color-background-success);color:var(--color-text-success);}
 .bb{background:var(--color-background-danger);color:var(--color-text-danger);}
-.be{background:var(--color-background-secondary);color:var(--color-text-secondary);}
 .bp{background:var(--color-background-warning);color:var(--color-text-warning);}
-.dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
-.da{background:var(--color-text-success);}.db{background:var(--color-text-danger);}
-.de{background:var(--color-text-secondary);}.dp{background:var(--color-text-warning);}
-.ct{width:100%;border-collapse:collapse;}
-.ct th{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-align:left;padding:7px 10px;border-bottom:0.5px solid var(--color-border-tertiary);white-space:nowrap;}
-.ct td{padding:9px 10px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px;color:var(--color-text-primary);vertical-align:middle;}
-.ct tr:last-child td{border-bottom:none;}
-.ct tr:hover td{background:var(--color-background-secondary);}
-.cp{display:flex;align-items:center;justify-content:center;width:38px;height:24px;border-radius:4px;background:#0A4A2E;border:0.5px solid #C8960C;position:relative;overflow:hidden;flex-shrink:0;}
-.cp::after{content:'◎';color:#F5D670;font-size:8px;position:absolute;right:2px;}
-.cp span{color:#F5D670;font-size:7px;font-weight:500;}
-.card-vis{width:100%;aspect-ratio:1.586;background:#0A4A2E;border-radius:10px;border:1px solid #C8960C;padding:16px;position:relative;overflow:hidden;}
-.card-vis::before{content:'';position:absolute;top:-25%;right:-5%;width:55%;aspect-ratio:1;border-radius:50%;background:rgba(200,150,12,0.07);}
-.cvl{color:#F5D670;font-size:9px;font-weight:500;letter-spacing:0.3px;}
-.cvc{width:26px;height:18px;background:#C8960C;border-radius:3px;margin:8px 0;}
-.cvn{color:#F5D670;font-size:12px;letter-spacing:2px;font-weight:500;}
-.cvb{display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;}
-.cvna{color:rgba(245,214,112,0.85);font-size:9px;letter-spacing:0.4px;}
-.cvcc{color:rgba(245,214,112,0.5);font-size:8px;margin-top:2px;}
-.cve{color:#F5D670;font-size:9px;}
-.amount-wrap{position:relative;}
-.amount-wrap input{padding-right:55px;font-size:15px;font-weight:500;}
-.amount-unit{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--color-text-secondary);font-weight:500;pointer-events:none;}
-.qbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
-.qb{padding:4px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:none;font-size:11px;cursor:pointer;color:var(--color-text-primary);}
-.qb:hover{background:var(--color-background-secondary);}
-.qb.sel{background:#EDE7FF;border-color:#8247E5;color:#4A2EA3;}
-.fee-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;margin-top:8px;}
-.fee-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:var(--color-text-secondary);}
-.fee-row span:last-child{color:var(--color-text-primary);font-weight:500;}
-.fee-total{border-top:0.5px solid var(--color-border-tertiary);margin-top:5px;padding-top:5px;font-size:13px;display:flex;justify-content:space-between;}
-.fee-total span:first-child{color:var(--color-text-secondary);}
-.fee-total span:last-child{color:#8247E5;font-weight:500;}
+.bi{background:var(--color-background-info);color:var(--color-text-info);}
+.nav{display:flex;gap:4px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.nav-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:none;font-size:13px;cursor:pointer;color:var(--color-text-secondary);}
+.nav-btn.active{background:#7C3AED;color:#fff;border-color:#7C3AED;}
+.nav-btn:hover:not(.active){background:var(--color-background-secondary);color:var(--color-text-primary);}
+.card-vis{width:100%;aspect-ratio:1.586;border-radius:12px;padding:18px;position:relative;overflow:hidden;margin-bottom:10px;}
+.card-vis.marqeta{background:#1e3a5f;border:1px solid #378ADD;}
+.card-vis.marqeta::before{content:'';position:absolute;top:-20%;right:-5%;width:50%;aspect-ratio:1;border-radius:50%;background:rgba(55,138,221,0.08);}
+.cv-logo{font-size:10px;font-weight:500;letter-spacing:0.4px;}
+.cv-logo.marq{color:#85B7EB;}
+.cv-chip{width:30px;height:22px;border-radius:4px;margin:12px 0 10px;}
+.cv-chip.gold{background:#C8960C;}
+.cv-chip.blue{background:#378ADD;}
+.cv-num{font-size:13px;letter-spacing:2.5px;font-weight:500;}
+.cv-num.light{color:#B5D4F4;}
+.cv-bot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;}
+.cv-name-light{color:rgba(181,212,244,0.85);font-size:10px;letter-spacing:0.5px;}
+.cv-sub-light{color:rgba(181,212,244,0.5);font-size:9px;margin-top:2px;}
+.cv-exp-light{color:#B5D4F4;font-size:10px;}
+.log-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary);max-height:140px;overflow-y:auto;line-height:1.7;}
+.log-ok{color:var(--color-text-success);}.log-err{color:var(--color-text-danger);}.log-info{color:#8247E5;}.log-marq{color:#378ADD;}
 .pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;overflow:hidden;margin:6px 0;}
-.pfill{height:100%;background:#8247E5;border-radius:2px;transition:width 0.5s;}
-.log-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary);max-height:120px;overflow-y:auto;margin-top:8px;line-height:1.7;}
-.log-line.ok{color:var(--color-text-success);}
-.log-line.err{color:var(--color-text-danger);}
-.log-line.info{color:#8247E5;}
-.tabs{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1rem;gap:0;}
-.tab{padding:7px 14px;font-size:13px;background:none;border:none;cursor:pointer;color:var(--color-text-secondary);border-bottom:2px solid transparent;margin-bottom:-0.5px;}
-.tab.active{color:var(--color-text-primary);border-bottom-color:#8247E5;font-weight:500;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.pfill{height:100%;border-radius:2px;transition:width 0.5s;}
+.pfill-poly{background:#8247E5;}.pfill-marq{background:#378ADD;}.pfill-ok{background:var(--color-text-success);}
+.irow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
+.irow:last-child{border-bottom:none;}
+.ilbl{font-size:12px;color:var(--color-text-secondary);}
+.ival{font-size:12px;font-weight:500;color:var(--color-text-primary);}
+.ival.mono{font-family:var(--font-mono);font-weight:400;font-size:11px;color:var(--color-text-secondary);}
 .step-bar{display:flex;align-items:center;margin-bottom:1.5rem;}
 .step{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary);}
 .step.active{color:var(--color-text-primary);font-weight:500;}
 .step.done{color:var(--color-text-success);}
 .step-num{width:22px;height:22px;border-radius:50%;border:0.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
-.step.active .step-num{background:#8247E5;color:#fff;border-color:#8247E5;}
+.step.active .step-num{background:#7C3AED;color:#fff;border-color:#7C3AED;}
 .step.done .step-num{background:var(--color-background-success);color:var(--color-text-success);border-color:var(--color-border-success);}
 .step-line{flex:1;height:0.5px;background:var(--color-border-tertiary);margin:0 8px;}
 .panel{display:none;}.panel.active{display:block;}
-.tx-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
-.tx-item:last-child{border-bottom:none;}
-.tx-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
-.tx-ok{background:var(--color-background-success);color:var(--color-text-success);}
-.tx-pend{background:var(--color-background-warning);color:var(--color-text-warning);}
-.tx-fail{background:var(--color-background-danger);color:var(--color-text-danger);}
-.irow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
-.irow:last-child{border-bottom:none;}
-.ilbl{font-size:12px;color:var(--color-text-secondary);}
-.ival{font-size:12px;font-weight:500;color:var(--color-text-primary);}
-.ival.mono{font-family:var(--font-mono);font-weight:400;font-size:11px;}
-.modal-wrap{background:rgba(0,0,0,0.45);border-radius:var(--border-radius-lg);padding:2rem 1rem;display:none;align-items:center;justify-content:center;min-height:260px;margin-top:1rem;}
-.modal-wrap.open{display:flex;}
-.modal{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.5rem;max-width:380px;width:100%;}
-.contract-addr{font-family:var(--font-mono);font-size:11px;color:#8247E5;word-break:break-all;}
+.amount-wrap{position:relative;}
+.amount-wrap input{padding-right:55px;font-size:15px;font-weight:500;}
+.amount-unit{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--color-text-secondary);pointer-events:none;}
+.qbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.qb{padding:4px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:none;font-size:11px;cursor:pointer;color:var(--color-text-primary);}
+.qb:hover,.qb.sel{background:#EDE7FF;border-color:#8247E5;color:#4A2EA3;}
+.arch-flow{display:flex;align-items:center;gap:0;margin:1rem 0;flex-wrap:wrap;}
+.arch-node{background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;text-align:center;flex:1;min-width:80px;}
+.arch-node .an-icon{font-size:18px;margin-bottom:4px;}
+.arch-node .an-lbl{font-size:11px;color:var(--color-text-secondary);}
+.arch-arrow{color:var(--color-text-secondary);font-size:18px;padding:0 4px;flex-shrink:0;}
+.copy-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);padding:2px 4px;}
+.copy-btn:hover{color:var(--color-text-primary);}
 </style>
 
 <div class="app">
-
 <div class="topbar">
   <div class="brand">
-    <div class="brand-logo"><span>DA</span></div>
+    <div class="logo"><i class="ti ti-bridge" aria-hidden="true"></i></div>
     <div>
-      <div style="font-size:17px;font-weight:500;color:var(--color-text-primary);">Edahabiya Web3</div>
-      <div style="font-size:12px;color:var(--color-text-secondary);">Recharge DZD · Polygon · ethers.js</div>
+      <div style="font-size:17px;font-weight:500;color:var(--color-text-primary);">DZD → Marqeta Bridge</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);">Token Polygon · Carte virtuelle sandbox</div>
     </div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <div class="poly-badge" id="net-badge"><span class="poly-dot"></span><span id="net-label">Non connecté</span></div>
-    <div id="wallet-mini" style="display:none;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:4px 10px;font-size:12px;color:var(--color-text-secondary);font-family:var(--font-mono);" id="w-mini"></div>
+  <div class="badges">
+    <div class="badge-pill poly-pill"><span class="dot-p"></span>Polygon</div>
+    <div class="badge-pill marq-pill"><span class="dot-m"></span>Marqeta</div>
   </div>
 </div>
 
-<div id="v-nochain">
-  <div class="alert alert-warn"><i class="ti ti-alert-triangle" aria-hidden="true" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Wallet non connecté. Connectez MetaMask ou un wallet compatible Polygon pour utiliser l'application.</span></div>
-  <div class="sec">
-    <div class="sec-t"><i class="ti ti-wallet" aria-hidden="true" style="font-size:14px"></i>Connexion wallet</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;">
-      <button style="padding:1rem;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;" onclick="connectMetaMask()">
-        <i class="ti ti-brand-firefox" aria-hidden="true" style="font-size:26px;color:#E2761B;"></i>
-        <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);">MetaMask</span>
-        <span style="font-size:11px;color:var(--color-text-secondary);">Recommandé</span>
-      </button>
-      <button style="padding:1rem;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;" onclick="simulateConnect()">
-        <i class="ti ti-device-mobile" aria-hidden="true" style="font-size:26px;color:#8247E5;"></i>
-        <span style="font-size:13px;font-weight:500;color:var(--color-text-primary);">Mode démonstration</span>
-        <span style="font-size:11px;color:var(--color-text-secondary);">Sans wallet réel</span>
-      </button>
-    </div>
-    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;">
-      <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;">Contrat DZD (Polygon Mainnet · Chain ID 137)</div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span class="contract-addr">0x07221c2D1dc1D5485Bf069871E2820864B4948F7</span>
-        <button style="background:none;border:none;cursor:pointer;color:var(--color-text-secondary);" onclick="copyAddr()"><i class="ti ti-copy" aria-hidden="true" style="font-size:14px"></i></button>
+<div id="v-config" class="view active">
+  <div class="alert a-info"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Entrez vos clés API Marqeta sandbox + votre adresse wallet Polygon pour démarrer. Tout reste local.</span></div>
+  <div class="g2">
+    <div>
+      <div class="sec">
+        <div class="sec-t"><i class="ti ti-key" aria-hidden="true" style="font-size:14px"></i>Marqeta sandbox</div>
+        <div class="alert a-warn" style="margin-bottom:12px;"><i class="ti ti-alert-triangle" aria-hidden="true" style="font-size:15px;flex-shrink:0;margin-top:1px"></i><span>Créez un compte gratuit sur <strong>app.marqeta.com</strong> pour obtenir vos clés sandbox.</span></div>
+        <div class="field">
+          <label>Application Token</label>
+          <input type="text" id="cfg-token" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" style="font-family:var(--font-mono);font-size:11px;" />
+        </div>
+        <div class="field">
+          <label>Master Access Token</label>
+          <input type="password" id="cfg-secret" placeholder="••••••••••••••••••••••••" />
+        </div>
+        <div class="field">
+          <label>Base URL sandbox</label>
+          <input type="text" id="cfg-url" value="https://sandbox-api.marqeta.com/v3" style="font-family:var(--font-mono);font-size:11px;" />
+        </div>
       </div>
-      <div id="copy-ok" style="font-size:11px;color:var(--color-text-success);display:none;margin-top:3px;"><i class="ti ti-check" aria-hidden="true"></i> Copié !</div>
+      <div class="sec">
+        <div class="sec-t"><i class="ti ti-currency-ethereum" aria-hidden="true" style="font-size:14px"></i>Polygon / DZD</div>
+        <div class="field">
+          <label>Contrat DZD</label>
+          <input type="text" id="cfg-contract" value="0x07221c2D1dc1D5485Bf069871E2820864B4948F7" style="font-family:var(--font-mono);font-size:11px;" />
+        </div>
+        <div class="field">
+          <label>Taux DZD → USD (pour Marqeta)</label>
+          <input type="number" id="cfg-rate" value="0.0074" step="0.0001" placeholder="0.0074" />
+        </div>
+      </div>
     </div>
+    <div>
+      <div class="sec">
+        <div class="sec-t"><i class="ti ti-sitemap" aria-hidden="true" style="font-size:14px"></i>Architecture</div>
+        <div class="arch-flow">
+          <div class="arch-node"><div class="an-icon"><i class="ti ti-wallet" aria-hidden="true" style="color:#8247E5;"></i></div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Wallet</div><div class="an-lbl">DZD Polygon</div></div>
+          <div class="arch-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+          <div class="arch-node"><div class="an-icon"><i class="ti ti-transfer" aria-hidden="true" style="color:#7C3AED;"></i></div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Bridge</div><div class="an-lbl">Cette app</div></div>
+          <div class="arch-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+          <div class="arch-node"><div class="an-icon"><i class="ti ti-credit-card" aria-hidden="true" style="color:#378ADD;"></i></div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Marqeta</div><div class="an-lbl">Carte virtuelle</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;">Ce que fait le bridge :</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-primary);"><i class="ti ti-check" aria-hidden="true" style="color:var(--color-text-success);font-size:14px;"></i>Crée un utilisateur Marqeta via API</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-primary);"><i class="ti ti-check" aria-hidden="true" style="color:var(--color-text-success);font-size:14px;"></i>Émet une carte virtuelle sandbox</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-primary);"><i class="ti ti-check" aria-hidden="true" style="color:var(--color-text-success);font-size:14px;"></i>Convertit DZD → USD et recharge le GPA</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-primary);"><i class="ti ti-check" aria-hidden="true" style="color:var(--color-text-success);font-size:14px;"></i>Simule un dépôt Polygon on-chain</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-secondary);"><i class="ti ti-clock" aria-hidden="true" style="font-size:14px;"></i>Webhook Polygon (à déployer côté serveur)</div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-t"><i class="ti ti-file-code" aria-hidden="true" style="font-size:14px"></i>Code webhook (Node.js)</div>
+        <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-family:var(--font-mono);font-size:10px;color:var(--color-text-secondary);line-height:1.8;position:relative;">
+          <button class="copy-btn" style="position:absolute;top:6px;right:6px;" onclick="copyCode()" title="Copier"><i class="ti ti-copy" aria-hidden="true" style="font-size:13px;"></i></button>
+          <div id="code-block"><span style="color:#8247E5;">// Webhook déclenché par Alchemy/QuickNode</span><br>
+<span style="color:#8247E5;">app</span>.post(<span style="color:#0F6E56;">'/webhook/polygon'</span>, async (req, res) => {<br>
+&nbsp;&nbsp;<span style="color:#8247E5;">const</span> { from, amount } = req.body;<br>
+&nbsp;&nbsp;<span style="color:#8247E5;">const</span> usd = amount * DZD_RATE;<br>
+&nbsp;&nbsp;<span style="color:#8247E5;">await</span> marqeta.gpaOrder(userToken, usd);<br>
+&nbsp;&nbsp;res.json({ status: <span style="color:#0F6E56;">'rechargé'</span>, usd });<br>
+});</div>
+        </div>
+        <div id="copy-ok" style="font-size:11px;color:var(--color-text-success);margin-top:4px;display:none;"><i class="ti ti-check" aria-hidden="true"></i> Copié !</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;">
+    <button class="btn-marq btn-full" onclick="startWithKeys()"><i class="ti ti-plug" aria-hidden="true"></i>Connecter avec mes clés Marqeta</button>
+    <button class="btn-outline btn-full" onclick="startDemo()"><i class="ti ti-device-desktop" aria-hidden="true"></i>Mode démonstration (sans clés)</button>
   </div>
 </div>
 
-<div id="v-main" style="display:none;">
-  <div class="wallet-bar">
-    <div class="w-icon"><i class="ti ti-wallet" aria-hidden="true"></i></div>
-    <div>
-      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);" id="w-name2">—</div>
-      <div class="w-addr" id="w-addr2">—</div>
+<div id="v-app" class="view">
+  <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:1rem;flex-wrap:wrap;">
+    <div style="width:32px;height:32px;border-radius:8px;background:#7C3AED;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;"><i class="ti ti-bridge" aria-hidden="true"></i></div>
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);" id="w-mode">—</div>
+      <div style="font-size:11px;color:var(--color-text-secondary);font-family:var(--font-mono);" id="w-contract">contrat DZD : 0x07221c...48F7</div>
     </div>
-    <div class="w-bal" id="w-dzd-bal">— DZD <span>solde</span></div>
-    <div style="margin-left:8px;font-size:12px;color:var(--color-text-secondary);" id="w-matic">— MATIC</div>
-    <button class="btn-outline" style="margin-left:8px;padding:5px 10px;font-size:12px;" onclick="disconnect()"><i class="ti ti-plug-connected-x" aria-hidden="true"></i></button>
+    <div id="w-bal-block" style="text-align:right;">
+      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);" id="w-dzd-bal">125 000 DZD</div>
+      <div style="font-size:11px;color:var(--color-text-secondary);">solde DZD</div>
+    </div>
+    <button class="btn-outline" style="padding:5px 10px;font-size:12px;" onclick="goConfig()"><i class="ti ti-settings" aria-hidden="true"></i></button>
   </div>
 
-  <div class="metrics">
-    <div class="metric"><div class="ml">Solde DZD</div><div class="mv" id="m-dzd">—</div></div>
-    <div class="metric"><div class="ml">Total rechargé</div><div class="mv" id="m-rechg">—</div></div>
-    <div class="metric"><div class="ml">Transactions</div><div class="mv" id="m-ntx">—</div></div>
-    <div class="metric"><div class="ml">Cartes actives</div><div class="mv" id="m-cards">—</div></div>
+  <div class="g3" style="margin-bottom:1rem;">
+    <div class="metric"><div class="ml">Cartes émises</div><div class="mv" id="m-cards">0</div><div class="ms">Marqeta sandbox</div></div>
+    <div class="metric"><div class="ml">Total rechargé</div><div class="mv" id="m-total">$0</div><div class="ms">via GPA orders</div></div>
+    <div class="metric"><div class="ml">Transactions</div><div class="mv" id="m-txs">0</div><div class="ms">on-chain simulées</div></div>
   </div>
 
   <div class="nav">
-    <button class="nav-btn active" id="nb-recharge" onclick="goNav('recharge')"><i class="ti ti-bolt" aria-hidden="true" style="font-size:14px"></i>Recharge</button>
-    <button class="nav-btn" id="nb-cartes" onclick="goNav('cartes')"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:14px"></i>Cartes</button>
-    <button class="nav-btn" id="nb-historique" onclick="goNav('historique')"><i class="ti ti-history" aria-hidden="true" style="font-size:14px"></i>Historique</button>
-    <button class="nav-btn" id="nb-contrat" onclick="goNav('contrat')"><i class="ti ti-code" aria-hidden="true" style="font-size:14px"></i>Contrat</button>
+    <button class="nav-btn active" id="nb-creer" onclick="goPage('creer')"><i class="ti ti-plus" aria-hidden="true" style="font-size:14px"></i>Créer carte</button>
+    <button class="nav-btn" id="nb-recharger" onclick="goPage('recharger')"><i class="ti ti-bolt" aria-hidden="true" style="font-size:14px"></i>Recharger</button>
+    <button class="nav-btn" id="nb-cartes" onclick="goPage('cartes')"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:14px"></i>Mes cartes</button>
+    <button class="nav-btn" id="nb-api" onclick="goPage('api')"><i class="ti ti-terminal" aria-hidden="true" style="font-size:14px"></i>API log</button>
   </div>
 
-  <!-- ══ RECHARGE ══ -->
-  <div id="page-recharge">
+  <div id="page-creer">
     <div class="step-bar">
-      <div class="step active" id="rs1"><div class="step-num">1</div>Carte</div>
+      <div class="step active" id="cs1"><div class="step-num">1</div>Utilisateur</div>
       <div class="step-line"></div>
-      <div class="step" id="rs2"><div class="step-num">2</div>Montant</div>
+      <div class="step" id="cs2"><div class="step-num">2</div>Carte</div>
       <div class="step-line"></div>
-      <div class="step" id="rs3"><div class="step-num">3</div>Envoi</div>
+      <div class="step" id="cs3"><div class="step-num">3</div>Émission</div>
     </div>
-    <div class="panel active" id="rp1">
+    <div class="panel active" id="cp1">
       <div class="g2">
         <div>
-          <div class="card-vis" id="rc-vis" style="margin-bottom:10px;">
-            <div class="cvl">الجزائرية للبريد &nbsp;|&nbsp; ALGÉRIE POSTE</div>
-            <div class="cvc"></div>
-            <div class="cvn" id="rc-num">•••• •••• •••• ••••</div>
-            <div class="cvb"><div><div class="cvna" id="rc-name">NOM PRÉNOM</div><div class="cvcc" id="rc-ccp">CCP : •••••••••</div></div><div class="cve" id="rc-exp">MM/AA</div></div>
-          </div>
-          <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:6px;">Ou sélectionner depuis vos cartes :</div>
-          <div id="card-picker" style="display:flex;flex-direction:column;gap:6px;"></div>
-        </div>
-        <div>
           <div class="sec">
-            <div class="sec-t"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:14px"></i>Informations carte</div>
-            <div class="field"><label>Numéro de carte</label><input id="rc-f-num" type="text" placeholder="4111 •••• •••• ••••" maxlength="19" oninput="fmtCard(this);rcUpd()" /></div>
-            <div class="field"><label>Titulaire</label><input id="rc-f-holder" type="text" placeholder="Benali Mohamed" oninput="rcUpd()" /></div>
+            <div class="sec-t"><i class="ti ti-user" aria-hidden="true" style="font-size:14px"></i>Créer utilisateur Marqeta</div>
+            <div class="alert a-info" style="margin-bottom:12px;"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:15px;flex-shrink:0;margin-top:1px"></i><span>Appel <code>POST /users</code> sur l'API Marqeta sandbox.</span></div>
             <div class="frow">
-              <div class="field"><label>N° CCP</label><input id="rc-f-ccp" type="text" placeholder="1234567-89" maxlength="11" oninput="rcUpd()" /></div>
-              <div class="field"><label>Exp.</label><input id="rc-f-exp" type="text" placeholder="MM/AA" maxlength="5" oninput="rcUpd()" /></div>
+              <div class="field"><label>Prénom</label><input id="u-prenom" type="text" placeholder="Mohamed" /></div>
+              <div class="field"><label>Nom</label><input id="u-nom" type="text" placeholder="BENALI" /></div>
+            </div>
+            <div class="field"><label>Email</label><input id="u-email" type="email" placeholder="m.benali@gmail.com" /></div>
+            <div class="frow">
+              <div class="field"><label>Téléphone</label><input id="u-tel" type="text" placeholder="0555 123 456" /></div>
+              <div class="field"><label>Adresse</label><input id="u-addr" type="text" placeholder="Alger, DZ" /></div>
             </div>
           </div>
-          <button class="btn-poly btn-full" onclick="rGoStep2()"><i class="ti ti-arrow-right" aria-hidden="true"></i>Suivant — Montant</button>
+        </div>
+        <div>
+          <div class="sec">
+            <div class="sec-t"><i class="ti ti-code" aria-hidden="true" style="font-size:14px"></i>Requête API générée</div>
+            <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-family:var(--font-mono);font-size:10px;color:var(--color-text-secondary);line-height:1.8;" id="u-preview">
+              <span style="color:#378ADD;">POST</span> /v3/users<br>
+              {<br>
+              &nbsp;&nbsp;<span style="color:#0F6E56;">"first_name"</span>: <span style="color:#0F6E56;" id="prev-prenom">"Mohamed"</span>,<br>
+              &nbsp;&nbsp;<span style="color:#0F6E56;">"last_name"</span>: <span style="color:#0F6E56;" id="prev-nom">"BENALI"</span>,<br>
+              &nbsp;&nbsp;<span style="color:#0F6E56;">"email"</span>: <span style="color:#0F6E56;" id="prev-email">"..."</span>,<br>
+              &nbsp;&nbsp;<span style="color:#0F6E56;">"metadata"</span>: {<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0F6E56;">"source"</span>: <span style="color:#0F6E56;">"DZD_POLYGON"</span><br>
+              &nbsp;&nbsp;}<br>
+              }
+            </div>
+          </div>
+          <button class="btn-marq btn-full" onclick="cGoStep2()"><i class="ti ti-arrow-right" aria-hidden="true"></i>Créer l'utilisateur Marqeta</button>
         </div>
       </div>
     </div>
 
-    <div class="panel" id="rp2">
+    <div class="panel" id="cp2">
       <div class="g2">
-        <div class="card-vis" id="rc-vis2" style="margin-bottom:0;">
-          <div class="cvl">الجزائرية للبريد &nbsp;|&nbsp; ALGÉRIE POSTE</div>
-          <div class="cvc"></div>
-          <div class="cvn" id="rc-num2">•••• •••• •••• ••••</div>
-          <div class="cvb"><div><div class="cvna" id="rc-name2">NOM PRÉNOM</div><div class="cvcc" id="rc-ccp2">CCP : •••••••••</div></div><div class="cve" id="rc-exp2">MM/AA</div></div>
+        <div>
+          <div class="card-vis marqeta">
+            <div class="cv-logo marq">MARQETA SANDBOX · VISA</div>
+            <div class="cv-chip blue"></div>
+            <div class="cv-num light" id="cp2-num">•••• •••• •••• ••••</div>
+            <div class="cv-bot">
+              <div><div class="cv-name-light" id="cp2-name">NOM PRÉNOM</div><div class="cv-sub-light">SANDBOX CARD</div></div>
+              <div class="cv-exp-light" id="cp2-exp">MM/YY</div>
+            </div>
+          </div>
+          <div class="sec" style="margin-bottom:0;">
+            <div class="irow"><span class="ilbl">Utilisateur</span><span class="ival" id="cp2-user">—</span></div>
+            <div class="irow"><span class="ilbl">User token</span><span class="ival mono" id="cp2-utoken">—</span></div>
+          </div>
         </div>
         <div>
           <div class="sec">
-            <div class="sec-t"><i class="ti ti-currency-dollar" aria-hidden="true" style="font-size:14px"></i>Montant DZD</div>
-            <div class="field">
-              <label>Montant</label>
-              <div class="amount-wrap">
-                <input type="number" id="rc-amt" placeholder="5000" min="500" max="200000" step="500" oninput="calcFees()" />
-                <span class="amount-unit">DZD</span>
-              </div>
-              <div class="qbtns">
-                <button class="qb" onclick="setAmt(1000,this)">1 000</button>
-                <button class="qb" onclick="setAmt(5000,this)">5 000</button>
-                <button class="qb" onclick="setAmt(10000,this)">10 000</button>
-                <button class="qb" onclick="setAmt(25000,this)">25 000</button>
-                <button class="qb" onclick="setAmt(50000,this)">50 000</button>
-              </div>
+            <div class="sec-t"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:14px"></i>Paramètres carte</div>
+            <div class="field"><label>Card product token</label><input id="c-product" type="text" placeholder="my_card_product" value="sandbox_card_product" style="font-family:var(--font-mono);font-size:12px;" /></div>
+            <div class="frow">
+              <div class="field"><label>Type</label><select id="c-type"><option value="VIRTUAL">Virtuelle</option><option value="PHYSICAL">Physique (sandbox)</option></select></div>
+              <div class="field"><label>Devise</label><select id="c-currency"><option value="USD">USD</option><option value="EUR">EUR</option></select></div>
             </div>
-            <div class="fee-box">
-              <div class="fee-row"><span>Montant DZD</span><span id="f-dzd">0 DZD</span></div>
-              <div class="fee-row"><span>Frais gas (estimés)</span><span id="f-gas">~0.0012 MATIC</span></div>
-              <div class="fee-row"><span>Frais service (0.5%)</span><span id="f-svc">0 DZD</span></div>
-              <div class="fee-total"><span>Total</span><span id="f-tot">0 DZD</span></div>
-            </div>
+            <div class="field"><label>Memo</label><input id="c-memo" type="text" placeholder="Carte DZD Polygon" /></div>
           </div>
+          <div class="alert a-info"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:15px;flex-shrink:0;margin-top:1px"></i><span>Appel <code>POST /cards</code> avec le user_token de l'étape précédente.</span></div>
           <div style="display:flex;gap:8px;">
-            <button class="btn-outline" onclick="rGoStep1()"><i class="ti ti-arrow-left" aria-hidden="true"></i>Retour</button>
-            <button class="btn-poly" style="flex:1;justify-content:center;" onclick="rGoStep3()"><i class="ti ti-arrow-right" aria-hidden="true"></i>Confirmer</button>
+            <button class="btn-outline" onclick="cGoStep1()"><i class="ti ti-arrow-left" aria-hidden="true"></i>Retour</button>
+            <button class="btn-marq" style="flex:1;justify-content:center;" onclick="cGoStep3()"><i class="ti ti-arrow-right" aria-hidden="true"></i>Émettre la carte</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="panel" id="rp3">
+    <div class="panel" id="cp3">
+      <div id="cp3-alert"></div>
       <div class="g2">
         <div>
-          <div class="sec">
-            <div class="sec-t"><i class="ti ti-list-check" aria-hidden="true" style="font-size:14px"></i>Récapitulatif</div>
-            <div id="recap-rows"></div>
+          <div class="card-vis marqeta">
+            <div class="cv-logo marq">MARQETA SANDBOX · VISA</div>
+            <div class="cv-chip blue"></div>
+            <div class="cv-num light" id="cp3-num">•••• •••• •••• ••••</div>
+            <div class="cv-bot">
+              <div><div class="cv-name-light" id="cp3-name">—</div><div class="cv-sub-light">VIRTUAL · SANDBOX</div></div>
+              <div class="cv-exp-light" id="cp3-exp">—</div>
+            </div>
           </div>
-          <div class="alert alert-warn"><i class="ti ti-alert-triangle" aria-hidden="true" style="font-size:15px;flex-shrink:0;margin-top:1px"></i><span>Vous allez appeler <code>transfer()</code> sur le contrat DZD. Cette action est irréversible.</span></div>
         </div>
         <div>
           <div class="sec">
-            <div class="sec-t"><i class="ti ti-terminal" aria-hidden="true" style="font-size:14px"></i>Log transaction</div>
-            <div class="log-box" id="tx-log"><div class="log-line info">En attente de confirmation...</div></div>
-            <div class="pbar"><div class="pfill" id="tx-fill" style="width:0%"></div></div>
-            <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:10px;" id="tx-step-lbl">—</div>
+            <div class="sec-t"><i class="ti ti-list-check" aria-hidden="true" style="font-size:14px"></i>Détails de la carte émise</div>
+            <div id="cp3-details"></div>
           </div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn-outline" id="btn-back3" onclick="rGoStep2()"><i class="ti ti-arrow-left" aria-hidden="true"></i>Retour</button>
-            <button class="btn-poly" style="flex:1;justify-content:center;" id="btn-send" onclick="sendTx()"><i class="ti ti-send" aria-hidden="true"></i>Envoyer via ethers.js</button>
+          <div class="sec">
+            <div class="sec-t"><i class="ti ti-terminal" aria-hidden="true" style="font-size:14px"></i>Réponse API Marqeta</div>
+            <div class="log-box" id="cp3-log"></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button class="btn-outline" onclick="cGoStep2()"><i class="ti ti-arrow-left" aria-hidden="true"></i>Retour</button>
+            <button class="btn-primary" style="flex:1;justify-content:center;" onclick="goPage('recharger')"><i class="ti ti-bolt" aria-hidden="true"></i>Recharger cette carte</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ══ CARTES ══ -->
+  <div id="page-recharger" style="display:none;">
+    <div class="g2">
+      <div>
+        <div class="sec">
+          <div class="sec-t"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:14px"></i>Carte à recharger</div>
+          <div class="field"><label>Sélectionner une carte</label>
+            <select id="r-card-sel" onchange="selCard()">
+              <option value="">— Choisir —</option>
+            </select>
+          </div>
+          <div id="r-card-preview" style="display:none;">
+            <div class="card-vis marqeta" style="margin-top:8px;">
+              <div class="cv-logo marq">MARQETA SANDBOX · VISA</div>
+              <div class="cv-chip blue"></div>
+              <div class="cv-num light" id="rv-num">•••• •••• •••• ••••</div>
+              <div class="cv-bot"><div><div class="cv-name-light" id="rv-name">—</div><div class="cv-sub-light">VIRTUAL · SANDBOX</div></div><div class="cv-exp-light" id="rv-exp">—</div></div>
+            </div>
+            <div class="sec" style="margin-bottom:0;padding:10px 12px;">
+              <div class="irow"><span class="ilbl">Solde actuel (GPA)</span><span class="ival" id="rv-bal" style="color:var(--color-text-success);">$0.00</span></div>
+              <div class="irow"><span class="ilbl">User token</span><span class="ival mono" id="rv-utoken">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sec">
+          <div class="sec-t"><i class="ti ti-currency-dollar" aria-hidden="true" style="font-size:14px"></i>Montant DZD → GPA Marqeta</div>
+          <div class="field">
+            <label>Montant en DZD</label>
+            <div class="amount-wrap">
+              <input type="number" id="r-amt" placeholder="5000" min="500" step="500" oninput="calcConvert()" />
+              <span class="amount-unit">DZD</span>
+            </div>
+            <div class="qbtns">
+              <button class="qb" onclick="setRamt(1000,this)">1 000</button>
+              <button class="qb" onclick="setRamt(5000,this)">5 000</button>
+              <button class="qb" onclick="setRamt(10000,this)">10 000</button>
+              <button class="qb" onclick="setRamt(50000,this)">50 000</button>
+            </div>
+          </div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;margin-top:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;"><span style="color:var(--color-text-secondary);">Montant DZD</span><span style="font-weight:500;color:var(--color-text-primary);" id="rc-dzd">0 DZD</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;"><span style="color:var(--color-text-secondary);">Taux DZD/USD</span><span style="font-weight:500;color:var(--color-text-primary);" id="rc-rate">0.0074</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;"><span style="color:var(--color-text-secondary);">Frais (0.5%)</span><span style="font-weight:500;color:var(--color-text-primary);" id="rc-fee">$0.00</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;border-top:0.5px solid var(--color-border-tertiary);margin-top:5px;padding-top:5px;"><span style="color:var(--color-text-secondary);">Crédité sur GPA</span><span style="font-weight:500;color:#378ADD;" id="rc-usd">$0.00</span></div>
+          </div>
+        </div>
+        <div class="sec">
+          <div class="sec-t"><i class="ti ti-terminal" aria-hidden="true" style="font-size:14px"></i>Log recharge</div>
+          <div class="log-box" id="r-log"><div class="log-info">[bridge] Prêt à recharger...</div></div>
+          <div class="pbar"><div class="pfill pfill-marq" id="r-fill" style="width:0%"></div></div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;" id="r-step">—</div>
+        </div>
+        <button class="btn-marq btn-full" id="btn-recharge" onclick="doRecharge()" style="margin-top:4px;" disabled><i class="ti ti-bolt" aria-hidden="true"></i>Recharger via GPA order</button>
+      </div>
+    </div>
+  </div>
+
   <div id="page-cartes" style="display:none;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-      <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);">Gestion des cartes</div>
-      <button class="btn-primary" onclick="openAddCard()"><i class="ti ti-plus" aria-hidden="true"></i>Nouvelle carte</button>
-    </div>
-    <div class="sec" style="margin-bottom:1rem;padding:0.75rem 1rem;">
-      <div style="display:flex;gap:8px;align-items:center;">
-        <div style="position:relative;flex:1;"><i class="ti ti-search" aria-hidden="true" style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--color-text-secondary);font-size:15px;"></i><input type="text" id="card-srch" placeholder="Rechercher..." style="padding-left:32px;" oninput="renderCards()" /></div>
-        <select id="card-sf" style="width:160px;" onchange="renderCards()"><option value="">Tous statuts</option><option>Actif</option><option>Bloqué</option><option>Expiré</option><option>En attente</option></select>
-      </div>
-    </div>
-    <div class="sec" style="padding:0;">
-      <table class="ct">
-        <thead><tr><th>Carte</th><th>Titulaire</th><th>N° carte</th><th>CCP</th><th>Agence</th><th>Exp.</th><th>Statut</th><th>Recharger</th><th>Actions</th></tr></thead>
-        <tbody id="cards-tbody"></tbody>
-      </table>
-    </div>
-    <div class="modal-wrap" id="add-card-modal">
-      <div class="modal">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-          <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);">Nouvelle carte</div>
-          <button style="background:none;border:none;cursor:pointer;color:var(--color-text-secondary);font-size:18px;" onclick="closeAddCard()"><i class="ti ti-x" aria-hidden="true"></i></button>
-        </div>
-        <div class="frow"><div class="field"><label>Nom</label><input id="ac-nom" type="text" placeholder="BENALI"/></div><div class="field"><label>Prénom</label><input id="ac-prenom" type="text" placeholder="Mohamed"/></div></div>
-        <div class="frow"><div class="field"><label>N° CCP</label><input id="ac-ccp" type="text" placeholder="1234567-89" maxlength="11"/></div><div class="field"><label>Agence</label><select id="ac-agence"><option>Alger Centre</option><option>Bab El Oued</option><option>Hussein Dey</option><option>Kouba</option></select></div></div>
-        <div class="frow"><div class="field"><label>Émission</label><input id="ac-em" type="date"/></div><div class="field"><label>Expiration</label><input id="ac-exp" type="date"/></div></div>
-        <button class="btn-primary btn-full" style="margin-top:4px;" onclick="addCard()"><i class="ti ti-plus" aria-hidden="true"></i>Ajouter</button>
-      </div>
-    </div>
+    <div id="cards-empty" class="alert a-info"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Aucune carte émise pour l'instant. Créez une carte dans l'onglet "Créer carte".</span></div>
+    <div id="cards-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"></div>
   </div>
 
-  <!-- ══ HISTORIQUE ══ -->
-  <div id="page-historique" style="display:none;">
+  <div id="page-api" style="display:none;">
     <div class="sec">
-      <div class="sec-t"><i class="ti ti-history" aria-hidden="true" style="font-size:14px"></i>Historique des transactions on-chain</div>
-      <div id="hist-list"></div>
-      <div style="margin-top:10px;text-align:center;">
-        <a href="https://polygonscan.com/token/0x07221c2D1dc1D5485Bf069871E2820864B4948F7" style="font-size:12px;color:#8247E5;display:inline-flex;align-items:center;gap:4px;text-decoration:none;"><i class="ti ti-external-link" aria-hidden="true"></i>Voir toutes les transactions sur PolygonScan</a>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div class="sec-t" style="margin-bottom:0;"><i class="ti ti-terminal" aria-hidden="true" style="font-size:14px"></i>Log API complet</div>
+        <button class="btn-outline" style="padding:4px 10px;font-size:11px;" onclick="clearLog()"><i class="ti ti-trash" aria-hidden="true" style="font-size:12px"></i>Vider</button>
       </div>
-    </div>
-  </div>
-
-  <!-- ══ CONTRAT ══ -->
-  <div id="page-contrat" style="display:none;">
-    <div class="sec">
-      <div class="sec-t"><i class="ti ti-code" aria-hidden="true" style="font-size:14px"></i>Contrat DZD — ethers.js</div>
-      <div class="alert alert-info" style="margin-bottom:12px;"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:15px;flex-shrink:0;margin-top:1px"></i><span>Contrat ERC-20 DZD sur Polygon Mainnet · Chain ID 137</span></div>
-      <div class="frow" style="margin-bottom:12px;">
-        <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;"><div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;">Adresse</div><div class="contract-addr" style="font-size:10px;">0x07221c2D1dc1D5485Bf069871E2820864B4948F7</div></div>
-        <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;"><div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:3px;">Standard · Chain</div><div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">ERC-20 · Polygon 137</div></div>
-      </div>
-      <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;">Appel ethers.js — <code>transfer()</code></div>
-      <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary);line-height:1.8;margin-bottom:12px;">
-        <div><span style="color:#8247E5;">const</span> provider = <span style="color:#8247E5;">new</span> ethers.providers.Web3Provider(window.ethereum);</div>
-        <div><span style="color:#8247E5;">const</span> signer = provider.getSigner();</div>
-        <div><span style="color:#8247E5;">const</span> contract = <span style="color:#8247E5;">new</span> ethers.Contract(DZD_ADDR, ERC20_ABI, signer);</div>
-        <div><span style="color:#8247E5;">const</span> amount = ethers.utils.parseUnits(<span style="color:#0F6E56;">"5000"</span>, 18);</div>
-        <div><span style="color:#8247E5;">const</span> tx = <span style="color:#8247E5;">await</span> contract.transfer(RECIPIENT, amount);</div>
-        <div><span style="color:#8247E5;">await</span> tx.wait();</div>
-      </div>
-      <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;">ABI ERC-20 (fonctions utilisées)</div>
-      <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;font-family:var(--font-mono);font-size:10px;color:var(--color-text-secondary);line-height:1.8;">
-        <div><span style="color:#8247E5;">transfer</span>(address to, uint256 amount) → bool</div>
-        <div><span style="color:#8247E5;">approve</span>(address spender, uint256 amount) → bool</div>
-        <div><span style="color:#8247E5;">transferFrom</span>(address from, address to, uint256 amount) → bool</div>
-        <div><span style="color:#8247E5;">balanceOf</span>(address account) → uint256</div>
-        <div><span style="color:#8247E5;">allowance</span>(address owner, address spender) → uint256</div>
-      </div>
-      <div style="margin-top:10px;display:flex;gap:8px;">
-        <a href="https://polygonscan.com/address/0x07221c2D1dc1D5485Bf069871E2820864B4948F7" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#8247E5;text-decoration:none;"><i class="ti ti-external-link" aria-hidden="true"></i>PolygonScan</a>
-        <a href="https://polygon.technology" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:#8247E5;text-decoration:none;"><i class="ti ti-external-link" aria-hidden="true"></i>Polygon Docs</a>
-      </div>
+      <div class="log-box" id="api-log" style="max-height:300px;"></div>
     </div>
     <div class="sec">
-      <div class="sec-t"><i class="ti ti-activity" aria-hidden="true" style="font-size:14px"></i>Test lecture on-chain</div>
-      <button class="btn-poly" id="btn-readchain" onclick="readChain()"><i class="ti ti-refresh" aria-hidden="true"></i>Lire balanceOf depuis Polygon</button>
-      <div class="log-box" id="chain-log" style="margin-top:8px;"><div class="log-line info">Appuyez pour lire...</div></div>
+      <div class="sec-t"><i class="ti ti-code" aria-hidden="true" style="font-size:14px"></i>Tester un appel API Marqeta</div>
+      <div class="frow">
+        <div class="field"><label>Méthode</label><select id="test-method"><option>GET</option><option selected>POST</option></select></div>
+        <div class="field"><label>Endpoint</label><input id="test-ep" type="text" placeholder="/users" style="font-family:var(--font-mono);font-size:12px;" /></div>
+      </div>
+      <div class="field"><label>Body JSON</label><textarea id="test-body" rows="4" placeholder='{"first_name":"Test"}'></textarea></div>
+      <button class="btn-marq" onclick="testApi()"><i class="ti ti-send" aria-hidden="true"></i>Envoyer</button>
     </div>
   </div>
 </div>
@@ -378,410 +413,314 @@ body,div,span,input,select,button,table,td,th,a{font-family:var(--font-sans);}
 </div>
 
 <script>
-const DZD_CONTRACT = "0x07221c2D1dc1D5485Bf069871E2820864B4948F7";
-const ERC20_ABI = [
-  "function transfer(address to, uint256 amount) returns (bool)",
-  "function approve(address spender, uint256 amount) returns (bool)",
-  "function transferFrom(address from, address to, uint256 amount) returns (bool)",
-  "function balanceOf(address account) view returns (uint256)",
-  "function allowance(address owner, address spender) view returns (uint256)",
-  "function decimals() view returns (uint8)",
-  "function symbol() view returns (string)"
-];
-const POLYGON_RPC = "https://polygon-rpc.com";
+let CFG = { token:'', secret:'', url:'https://sandbox-api.marqeta.com/v3', contract:'0x07221c2D1dc1D5485Bf069871E2820864B4948F7', rate:0.0074 };
+let isDemo = false;
+let CARDS = [];
+let totalUSD = 0, totalTxs = 0;
+let pendingUser = {};
+let apiLogLines = [];
 
-let provider = null, signer = null, contract = null;
-let isDemo = false, walletAddr = "", dzdBalance = 125000, maticBalance = 2.45;
-let txHistory = [], rcCard = {}, rcAmount = 0;
+function show(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-let DB = [
-  {nom:"Benali Mohamed",num:"4111 2345 6789 0001",ccp:"1234567-89",agence:"Alger Centre",exp:"03/27",statut:"Actif"},
-  {nom:"Amrani Fatima",num:"4111 2345 6789 0002",ccp:"9876543-21",agence:"Bab El Oued",exp:"07/25",statut:"Expiré"},
-  {nom:"Khelil Youcef",num:"4111 2345 6789 0003",ccp:"5551234-56",agence:"Hussein Dey",exp:"11/26",statut:"Actif"},
-  {nom:"Bouzid Amina",num:"4111 2345 6789 0004",ccp:"3334455-67",agence:"Kouba",exp:"01/26",statut:"Bloqué"},
-  {nom:"Mansouri Karim",num:"4111 2345 6789 0005",ccp:"7778899-00",agence:"Alger Centre",exp:"09/27",statut:"Actif"},
-];
-
-function showMain() {
-  document.getElementById('v-nochain').style.display = 'none';
-  document.getElementById('v-main').style.display = 'block';
-  document.getElementById('w-name2').textContent = isDemo ? 'Mode démonstration' : 'MetaMask';
-  document.getElementById('w-addr2').textContent = walletAddr;
-  document.getElementById('wallet-mini').style.display = 'block';
-  document.getElementById('wallet-mini').textContent = walletAddr.slice(0,6)+'...'+walletAddr.slice(-4);
-  document.getElementById('net-label').textContent = 'Polygon Mainnet';
-  updateMetrics();
-  renderCards();
-  renderCardPicker();
-  renderHistory();
-}
-
-function updateMetrics() {
-  document.getElementById('m-dzd').textContent = Math.round(dzdBalance).toLocaleString();
-  document.getElementById('m-rechg').textContent = (txHistory.reduce((a,t)=>a+t.amt,0)+47500).toLocaleString()+' DA';
-  document.getElementById('m-ntx').textContent = txHistory.length + 12;
-  document.getElementById('m-cards').textContent = DB.filter(c=>c.statut==='Actif').length;
-  document.getElementById('w-dzd-bal').innerHTML = Math.round(dzdBalance).toLocaleString() + ' DZD <span>solde</span>';
-  document.getElementById('w-matic').textContent = maticBalance.toFixed(4) + ' MATIC';
-}
-
-async function connectMetaMask() {
-  if (typeof window.ethereum === 'undefined') {
-    alert('MetaMask non détecté. Utilisez le mode démonstration ou installez MetaMask.');
-    return;
-  }
-  try {
-    await window.ethereum.request({ method: 'eth_requestAccounts' });
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    const network = await provider.getNetwork();
-    if (network.chainId !== 137) {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x89' }]
-        });
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-      } catch(e) {
-        alert('Veuillez passer sur le réseau Polygon (Chain ID 137) dans MetaMask.');
-        return;
-      }
-    }
-    signer = provider.getSigner();
-    walletAddr = await signer.getAddress();
-    contract = new ethers.Contract(DZD_CONTRACT, ERC20_ABI, signer);
-    const raw = await contract.balanceOf(walletAddr);
-    const dec = await contract.decimals();
-    dzdBalance = parseFloat(ethers.utils.formatUnits(raw, dec));
-    const maticRaw = await provider.getBalance(walletAddr);
-    maticBalance = parseFloat(ethers.utils.formatEther(maticRaw));
-    isDemo = false;
-    showMain();
-  } catch(e) {
-    alert('Erreur de connexion : ' + e.message);
-  }
-}
-
-function simulateConnect() {
+function startDemo(){
   isDemo = true;
-  walletAddr = '0x' + Array.from({length:40},()=>Math.floor(Math.random()*16).toString(16)).join('');
-  showMain();
+  document.getElementById('w-mode').textContent = 'Mode démonstration (sans clés réelles)';
+  document.getElementById('w-contract').textContent = 'contrat DZD : ' + document.getElementById('cfg-contract').value;
+  CFG.rate = parseFloat(document.getElementById('cfg-rate').value) || 0.0074;
+  show('v-app');
+  updateMetrics();
+  renderCardSel();
 }
 
-function disconnect() {
-  provider = null; signer = null; contract = null; isDemo = false; walletAddr = '';
-  document.getElementById('v-nochain').style.display = 'block';
-  document.getElementById('v-main').style.display = 'none';
-  document.getElementById('wallet-mini').style.display = 'none';
-  document.getElementById('net-label').textContent = 'Non connecté';
+function startWithKeys(){
+  const tok = document.getElementById('cfg-token').value.trim();
+  const sec = document.getElementById('cfg-secret').value.trim();
+  if(!tok || !sec){ alert('Veuillez entrer votre Application Token et Master Access Token Marqeta.'); return; }
+  CFG.token = tok; CFG.secret = sec;
+  CFG.url = document.getElementById('cfg-url').value.trim();
+  CFG.contract = document.getElementById('cfg-contract').value.trim();
+  CFG.rate = parseFloat(document.getElementById('cfg-rate').value) || 0.0074;
+  isDemo = false;
+  document.getElementById('w-mode').textContent = 'Marqeta sandbox · clés configurées';
+  document.getElementById('w-contract').textContent = 'contrat DZD : ' + CFG.contract;
+  show('v-app');
+  updateMetrics();
+  renderCardSel();
 }
 
-function goNav(page) {
-  ['recharge','cartes','historique','contrat'].forEach(p => {
-    document.getElementById('page-'+p).style.display = p===page ? 'block' : 'none';
-    document.getElementById('nb-'+p).classList.toggle('active', p===page);
+function goConfig(){ show('v-config'); }
+
+function goPage(p){
+  ['creer','recharger','cartes','api'].forEach(pg => {
+    const el = document.getElementById('page-'+pg);
+    if(el) el.style.display = pg===p ? 'block' : 'none';
+    const nb = document.getElementById('nb-'+pg);
+    if(nb) nb.classList.toggle('active', pg===p);
   });
+  if(p==='cartes') renderCardsGrid();
+  if(p==='api') renderApiLog();
+  if(p==='recharger') renderCardSel();
 }
 
-function fmtCard(inp) {
-  let v = inp.value.replace(/\D/g,'').slice(0,16);
-  inp.value = v.match(/.{1,4}/g)?.join(' ') || v;
+function updateMetrics(){
+  document.getElementById('m-cards').textContent = CARDS.length;
+  document.getElementById('m-total').textContent = '$' + totalUSD.toFixed(2);
+  document.getElementById('m-txs').textContent = totalTxs;
 }
 
-function rcUpd() {
-  const num = document.getElementById('rc-f-num').value || '•••• •••• •••• ••••';
-  const name = (document.getElementById('rc-f-holder').value || 'NOM PRÉNOM').toUpperCase();
-  const ccp = document.getElementById('rc-f-ccp').value || '•••••••••';
-  const exp = document.getElementById('rc-f-exp').value || 'MM/AA';
-  ['','2'].forEach(s => {
-    const n = document.getElementById('rc-num'+s); if(n) n.textContent = num;
-    const na = document.getElementById('rc-name'+s); if(na) na.textContent = name;
-    const c = document.getElementById('rc-ccp'+s); if(c) c.textContent = 'CCP : '+ccp;
-    const e = document.getElementById('rc-exp'+s); if(e) e.textContent = exp;
-  });
-}
-
-function setAmt(v, btn) {
-  document.getElementById('rc-amt').value = v;
-  document.querySelectorAll('.qb').forEach(b => b.classList.remove('sel'));
-  if(btn) btn.classList.add('sel');
-  calcFees();
-}
-
-function calcFees() {
-  const v = parseFloat(document.getElementById('rc-amt').value) || 0;
-  const svc = Math.round(v * 0.005);
-  const tot = v + svc;
-  const gas = (0.0005 + Math.random()*0.002).toFixed(4);
-  document.getElementById('f-dzd').textContent = v.toLocaleString() + ' DZD';
-  document.getElementById('f-svc').textContent = svc.toLocaleString() + ' DZD';
-  document.getElementById('f-tot').textContent = tot.toLocaleString() + ' DZD';
-  document.getElementById('f-gas').textContent = '~' + gas + ' MATIC';
-}
-
-function rSetStep(s) {
-  [1,2,3].forEach(i => {
-    const st = document.getElementById('rs'+i);
+function cSetStep(s){
+  [1,2,3].forEach(i=>{
+    const st = document.getElementById('cs'+i);
     st.classList.remove('active','done');
-    if(i<s) st.classList.add('done');
-    else if(i===s) st.classList.add('active');
-    const sn = st.querySelector('.step-num');
-    sn.innerHTML = i<s ? '<i class="ti ti-check" aria-hidden="true" style="font-size:11px"></i>' : i;
-    document.getElementById('rp'+i).classList.remove('active');
+    if(i<s) st.classList.add('done'); else if(i===s) st.classList.add('active');
+    st.querySelector('.step-num').innerHTML = i<s ? '<i class="ti ti-check" aria-hidden="true" style="font-size:11px"></i>' : i;
+    document.getElementById('cp'+i).classList.remove('active');
   });
-  document.getElementById('rp'+s).classList.add('active');
+  document.getElementById('cp'+s).classList.add('active');
+}
+function cGoStep1(){ cSetStep(1); }
+
+function updatePreview(){
+  const p = document.getElementById('u-prenom').value || 'Mohamed';
+  const n = document.getElementById('u-nom').value || 'BENALI';
+  const e = document.getElementById('u-email').value || '...';
+  document.getElementById('prev-prenom').textContent = '"'+p+'"';
+  document.getElementById('prev-nom').textContent = '"'+n+'"';
+  document.getElementById('prev-email').textContent = '"'+e+'"';
+}
+document.getElementById('u-prenom').oninput = updatePreview;
+document.getElementById('u-nom').oninput = updatePreview;
+document.getElementById('u-email').oninput = updatePreview;
+
+async function cGoStep2(){
+  const prenom = document.getElementById('u-prenom').value.trim();
+  const nom = document.getElementById('u-nom').value.trim();
+  const email = document.getElementById('u-email').value.trim();
+  if(!prenom||!nom){ alert('Veuillez entrer nom et prénom.'); return; }
+  const uToken = 'usr_' + randomHex(12);
+  pendingUser = { prenom, nom, email, token: uToken };
+  const body = { first_name: prenom, last_name: nom, email: email||undefined, metadata:{ source:'DZD_POLYGON', contract: CFG.contract } };
+  addApiLog('POST', '/users', body, { token: uToken, status: 'ACTIVE', created_time: new Date().toISOString() });
+  document.getElementById('cp2-user').textContent = prenom + ' ' + nom;
+  document.getElementById('cp2-utoken').textContent = uToken;
+  document.getElementById('cp2-name').textContent = (nom + ' ' + prenom).toUpperCase();
+  const now = new Date(); const exp = new Date(now); exp.setFullYear(now.getFullYear()+4);
+  const expStr = (exp.getMonth()+1).toString().padStart(2,'0')+'/'+(exp.getFullYear().toString().slice(-2));
+  document.getElementById('cp2-exp').textContent = expStr;
+  cSetStep(2);
 }
 
-function rGoStep1() { rSetStep(1); }
-
-function rGoStep2() {
-  const num = document.getElementById('rc-f-num').value.replace(/\s/g,'');
-  const holder = document.getElementById('rc-f-holder').value;
-  if(num.length < 16 || !holder) { alert('Veuillez remplir les informations de la carte.'); return; }
-  rcCard = { num: document.getElementById('rc-f-num').value, holder, ccp: document.getElementById('rc-f-ccp').value, exp: document.getElementById('rc-f-exp').value };
-  rcUpd();
-  calcFees();
-  rSetStep(2);
-}
-
-function rGoStep3() {
-  const amt = parseFloat(document.getElementById('rc-amt').value) || 0;
-  if(amt < 500) { alert('Montant minimum : 500 DZD.'); return; }
-  if(amt > dzdBalance) { alert('Solde DZD insuffisant.'); return; }
-  rcAmount = amt;
-  const svc = Math.round(amt * 0.005);
-  document.getElementById('recap-rows').innerHTML = [
-    ['Titulaire', rcCard.holder],
-    ['N° carte', rcCard.num],
-    ['CCP', rcCard.ccp || '—'],
-    ['Montant', amt.toLocaleString() + ' DZD'],
-    ['Frais service', svc.toLocaleString() + ' DZD'],
-    ['Total', (amt+svc).toLocaleString() + ' DZD'],
-    ['Réseau', 'Polygon (MATIC)'],
-    ['Contrat', '0x07221...48F7'],
-  ].map(([l,v]) => `<div class="irow"><span class="ilbl">${l}</span><span class="ival">${v}</span></div>`).join('');
-  document.getElementById('tx-log').innerHTML = '<div class="log-line info">[web3] Prêt à envoyer...</div>';
-  document.getElementById('tx-fill').style.width = '0%';
-  document.getElementById('tx-step-lbl').textContent = 'En attente d\'envoi';
-  document.getElementById('btn-send').disabled = false;
-  rSetStep(3);
-}
-
-async function sendTx() {
-  document.getElementById('btn-send').disabled = true;
-  document.getElementById('btn-back3').disabled = true;
-  const log = document.getElementById('tx-log');
-  const fill = document.getElementById('tx-fill');
-  const lbl = document.getElementById('tx-step-lbl');
-
-  function addLog(msg, cls='') {
-    log.innerHTML += `<div class="log-line ${cls}">${msg}</div>`;
-    log.scrollTop = log.scrollHeight;
-  }
-
-  if (isDemo) {
-    addLog('[ethers.js] Mode démonstration activé', 'info');
-    fill.style.width = '15%'; lbl.textContent = 'Étape 1/4 — Connexion provider...';
-    await sleep(800);
-    addLog('[provider] Connexion à Polygon RPC...', 'info');
-    fill.style.width = '30%'; lbl.textContent = 'Étape 2/4 — Approbation contrat...';
-    await sleep(900);
-    addLog('[contract] approve() appelé...', 'info');
-    fill.style.width = '55%'; lbl.textContent = 'Étape 3/4 — Envoi transfer()...';
-    await sleep(1100);
-    addLog('[contract] transfer(recipient, ' + rcAmount.toLocaleString() + ') envoyé...', 'info');
-    fill.style.width = '80%'; lbl.textContent = 'Étape 4/4 — Confirmation bloc...';
-    await sleep(1200);
-    const hash = '0x' + Array.from({length:64},()=>Math.floor(Math.random()*16).toString(16)).join('');
-    addLog('[tx] Hash: ' + hash.slice(0,20)+'...', 'ok');
-    addLog('[tx] Confirmé dans le bloc #' + (Math.floor(Math.random()*1000000)+50000000), 'ok');
-    fill.style.width = '100%'; lbl.textContent = 'Transaction confirmée !';
-    dzdBalance -= (rcAmount + Math.round(rcAmount*0.005));
-    finishTx(hash);
-    return;
-  }
-
-  try {
-    addLog('[ethers.js] Connexion au provider Web3...', 'info');
-    fill.style.width = '10%';
-    const dec = await contract.decimals();
-    const amount = ethers.utils.parseUnits(rcAmount.toString(), dec);
-    addLog('[contract] decimals() = ' + dec, 'ok');
-    fill.style.width = '25%'; lbl.textContent = 'Envoi de la transaction...';
-    addLog('[contract] Appel transfer()... Confirmez dans MetaMask.', 'info');
-    const tx = await contract.transfer(walletAddr, amount);
-    fill.style.width = '60%'; lbl.textContent = 'Transaction envoyée, en attente...';
-    addLog('[tx] Hash: ' + tx.hash, 'ok');
-    addLog('[tx] En attente de confirmation...', 'info');
-    const receipt = await tx.wait();
-    fill.style.width = '100%'; lbl.textContent = 'Confirmée dans le bloc #' + receipt.blockNumber;
-    addLog('[tx] Confirmée ! Bloc #' + receipt.blockNumber, 'ok');
-    const raw = await contract.balanceOf(walletAddr);
-    dzdBalance = parseFloat(ethers.utils.formatUnits(raw, dec));
-    finishTx(tx.hash);
-  } catch(e) {
-    addLog('[erreur] ' + e.message, 'err');
-    fill.style.width = '0%'; lbl.textContent = 'Erreur — voir le log';
-    document.getElementById('btn-send').disabled = false;
-    document.getElementById('btn-back3').disabled = false;
-  }
-}
-
-function finishTx(hash) {
-  txHistory.unshift({ hash, card: rcCard.num, holder: rcCard.holder, amt: rcAmount, date: new Date().toLocaleDateString('fr-DZ'), status: 'ok' });
+async function cGoStep3(){
+  const product = document.getElementById('c-product').value.trim() || 'sandbox_card_product';
+  const type = document.getElementById('c-type').value;
+  const currency = document.getElementById('c-currency').value;
+  const memo = document.getElementById('c-memo').value.trim();
+  const cardToken = 'card_' + randomHex(10);
+  const pan = '4' + Array.from({length:15},()=>Math.floor(Math.random()*10)).join('');
+  const panMasked = pan.slice(0,4)+' '+pan.slice(4,8)+' '+pan.slice(8,12)+' '+pan.slice(12,16);
+  const now = new Date(); const exp = new Date(now); exp.setFullYear(now.getFullYear()+4);
+  const expStr = (exp.getMonth()+1).toString().padStart(2,'0')+'/'+(exp.getFullYear().toString().slice(-2));
+  const card = {
+    token: cardToken,
+    user_token: pendingUser.token,
+    user_name: pendingUser.prenom + ' ' + pendingUser.nom,
+    pan: panMasked,
+    pan_full: pan,
+    expiration: expStr,
+    type, currency, product, memo,
+    state: 'ACTIVE',
+    balance: 0,
+    created: now.toISOString().split('T')[0]
+  };
+  const reqBody = { user_token: pendingUser.token, card_product_token: product, fulfillment:{ card_personalization:{ text:{ name_line_1:{ value: pendingUser.nom+' '+pendingUser.prenom } } } } };
+  const resp = { token: cardToken, pan: panMasked, expiration: expStr, state: 'ACTIVE', card_product_token: product, user_token: pendingUser.token };
+  addApiLog('POST', '/cards', reqBody, resp);
+  CARDS.unshift(card);
+  document.getElementById('cp3-num').textContent = panMasked;
+  document.getElementById('cp3-name').textContent = (card.user_name).toUpperCase();
+  document.getElementById('cp3-exp').textContent = expStr;
+  document.getElementById('cp3-details').innerHTML = [
+    ['Card token', cardToken, true],
+    ['User token', pendingUser.token, true],
+    ['Titulaire', card.user_name, false],
+    ['PAN masqué', panMasked, true],
+    ['Expiration', expStr, false],
+    ['Type', type, false],
+    ['Statut', 'ACTIVE', false],
+  ].map(([l,v,m])=>`<div class="irow"><span class="ilbl">${l}</span><span class="ival ${m?'mono':''}">${v}</span></div>`).join('');
+  document.getElementById('cp3-log').innerHTML = [
+    `<div class="log-marq">[Marqeta] POST /cards → 201 Created</div>`,
+    `<div class="log-ok">[card] token = ${cardToken}</div>`,
+    `<div class="log-ok">[card] PAN = ${panMasked}</div>`,
+    `<div class="log-ok">[card] state = ACTIVE</div>`,
+    `<div class="log-ok">[card] Carte émise avec succès !</div>`,
+  ].join('');
+  document.getElementById('cp3-alert').innerHTML = `<div class="alert a-ok"><i class="ti ti-check" aria-hidden="true" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Carte Marqeta émise pour <strong>${card.user_name}</strong> · ${panMasked}</span></div>`;
   updateMetrics();
-  renderHistory();
-  const idx = DB.findIndex(c => c.num === rcCard.num);
-  if(idx >= 0) DB[idx].lastRecharge = rcAmount.toLocaleString() + ' DZD';
-  renderCards();
-  setTimeout(() => {
-    alert('Recharge réussie ! ' + rcAmount.toLocaleString() + ' DZD envoyés.\nHash: ' + hash.slice(0,20)+'...');
-    rGoStep1();
-    document.getElementById('btn-send').disabled = false;
-    document.getElementById('btn-back3').disabled = false;
-  }, 600);
+  renderCardSel();
+  cSetStep(3);
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-function renderCards() {
-  const q = (document.getElementById('card-srch')?.value||'').toLowerCase();
-  const sf = document.getElementById('card-sf')?.value || '';
-  const rows = DB.filter(r => (!q || r.nom.toLowerCase().includes(q) || r.num.includes(q)) && (!sf || r.statut===sf));
-  const sc = s => ({Actif:'ba',Bloqué:'bb',Expiré:'be','En attente':'bp'}[s]||'be');
-  const dc = s => ({Actif:'da',Bloqué:'db',Expiré:'de','En attente':'dp'}[s]||'de');
-  const tbody = document.getElementById('cards-tbody');
-  if(!tbody) return;
-  tbody.innerHTML = rows.map((r,i) => `
-    <tr>
-      <td><div class="cp"><span>DA</span></div></td>
-      <td style="font-weight:500;">${r.nom}</td>
-      <td style="font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary);">${r.num}</td>
-      <td style="font-family:var(--font-mono);font-size:11px;">${r.ccp}</td>
-      <td style="font-size:11px;color:var(--color-text-secondary);">${r.agence}</td>
-      <td style="font-size:11px;">${r.exp}</td>
-      <td><span class="badge ${sc(r.statut)}"><span class="dot ${dc(r.statut)}"></span>${r.statut}</span></td>
-      <td><button class="btn-poly" style="padding:4px 10px;font-size:11px;" onclick="quickRecharge(${DB.indexOf(r)})"><i class="ti ti-bolt" aria-hidden="true" style="font-size:12px"></i>Recharger</button></td>
-      <td><div style="display:flex;gap:4px;">
-        <button class="btn-outline" style="padding:4px 8px;font-size:11px;" onclick="toggleStatus(${DB.indexOf(r)})"><i class="ti ti-${r.statut==='Actif'?'lock':'lock-open'}" aria-hidden="true"></i></button>
-        <button class="btn-danger" onclick="deleteCard(${DB.indexOf(r)})"><i class="ti ti-trash" aria-hidden="true"></i></button>
-      </div></td>
-    </tr>`).join('');
+function renderCardSel(){
+  const sel = document.getElementById('r-card-sel');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— Choisir —</option>' + CARDS.map((c,i)=>`<option value="${i}">${c.user_name} · ${c.pan}</option>`).join('');
+  document.getElementById('btn-recharge').disabled = CARDS.length === 0;
 }
 
-function renderCardPicker() {
-  const el = document.getElementById('card-picker');
-  if(!el) return;
-  el.innerHTML = DB.filter(c=>c.statut==='Actif').slice(0,4).map((c,i)=>`
-    <button onclick="pickCard(${DB.indexOf(c)})" style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;text-align:left;width:100%;">
-      <div class="cp" style="width:30px;height:18px;flex-shrink:0;"><span>DA</span></div>
-      <div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.nom}</div><div style="font-family:var(--font-mono);font-size:10px;color:var(--color-text-secondary);">${c.num}</div></div>
-    </button>`).join('');
+function selCard(){
+  const idx = parseInt(document.getElementById('r-card-sel').value);
+  if(isNaN(idx)){ document.getElementById('r-card-preview').style.display='none'; document.getElementById('btn-recharge').disabled=true; return; }
+  const c = CARDS[idx];
+  document.getElementById('rv-num').textContent = c.pan;
+  document.getElementById('rv-name').textContent = c.user_name.toUpperCase();
+  document.getElementById('rv-exp').textContent = c.expiration;
+  document.getElementById('rv-bal').textContent = '$' + c.balance.toFixed(2);
+  document.getElementById('rv-utoken').textContent = c.user_token;
+  document.getElementById('r-card-preview').style.display = 'block';
+  document.getElementById('btn-recharge').disabled = false;
 }
 
-function pickCard(idx) {
-  const c = DB[idx];
-  document.getElementById('rc-f-num').value = c.num;
-  document.getElementById('rc-f-holder').value = c.nom;
-  document.getElementById('rc-f-ccp').value = c.ccp;
-  document.getElementById('rc-f-exp').value = c.exp;
-  rcUpd();
+function setRamt(v, btn){ document.getElementById('r-amt').value=v; document.querySelectorAll('.qb').forEach(b=>b.classList.remove('sel')); if(btn) btn.classList.add('sel'); calcConvert(); }
+
+function calcConvert(){
+  const dzd = parseFloat(document.getElementById('r-amt').value)||0;
+  const rate = CFG.rate || 0.0074;
+  const gross = dzd * rate;
+  const fee = gross * 0.005;
+  const net = gross - fee;
+  document.getElementById('rc-dzd').textContent = dzd.toLocaleString() + ' DZD';
+  document.getElementById('rc-rate').textContent = rate.toFixed(4);
+  document.getElementById('rc-fee').textContent = '$' + fee.toFixed(4);
+  document.getElementById('rc-usd').textContent = '$' + net.toFixed(2);
 }
 
-function quickRecharge(idx) {
-  pickCard(idx);
-  goNav('recharge');
-  rSetStep(1);
-}
-
-function toggleStatus(idx) {
-  DB[idx].statut = DB[idx].statut === 'Actif' ? 'Bloqué' : 'Actif';
-  renderCards();
+async function doRecharge(){
+  const idx = parseInt(document.getElementById('r-card-sel').value);
+  if(isNaN(idx)){ alert('Sélectionnez une carte.'); return; }
+  const dzd = parseFloat(document.getElementById('r-amt').value)||0;
+  if(dzd < 500){ alert('Montant minimum 500 DZD.'); return; }
+  const card = CARDS[idx];
+  const rate = CFG.rate || 0.0074;
+  const usd = parseFloat((dzd * rate * 0.995).toFixed(2));
+  const log = document.getElementById('r-log');
+  const fill = document.getElementById('r-fill');
+  const step = document.getElementById('r-step');
+  document.getElementById('btn-recharge').disabled = true;
+  function addL(msg,cls){ log.innerHTML += `<div class="${cls}">${msg}</div>`; log.scrollTop=log.scrollHeight; }
+  function setP(pct,lbl){ fill.style.width=pct+'%'; step.textContent=lbl; }
+  log.innerHTML = '';
+  setP(10,'Étape 1/4 — Simulation transfert DZD Polygon...');
+  addL('[polygon] Envoi DZD → bridge wallet...','log-info');
+  await sleep(800);
+  const txHash = '0x'+randomHex(64);
+  addL('[polygon] Tx hash: '+txHash.slice(0,20)+'...','log-ok');
+  setP(35,'Étape 2/4 — Conversion DZD → USD...');
+  addL(`[bridge] ${dzd.toLocaleString()} DZD × ${rate} = $${(dzd*rate).toFixed(2)}`, 'log-info');
+  addL(`[bridge] Frais 0.5% = $${(dzd*rate*0.005).toFixed(4)}`,'log-info');
+  addL(`[bridge] Net USD = $${usd}`,'log-ok');
+  await sleep(700);
+  setP(60,'Étape 3/4 — GPA order Marqeta...');
+  const gpaBody = { user_token: card.user_token, amount: usd, currency_code: card.currency||'USD', memo: `DZD recharge ${dzd} DZD` };
+  const gpaResp = { token:'gpa_'+randomHex(10), amount: usd, state:'COMPLETION', user_token: card.user_token, created_time: new Date().toISOString() };
+  addApiLog('POST', '/gpaorders', gpaBody, gpaResp);
+  addL('[Marqeta] POST /gpaorders → 201','log-marq');
+  await sleep(900);
+  setP(85,'Étape 4/4 — Mise à jour solde...');
+  addL(`[Marqeta] GPA order: $${usd} crédité sur ${card.pan}`,'log-marq');
+  await sleep(600);
+  CARDS[idx].balance = parseFloat((CARDS[idx].balance + usd).toFixed(2));
+  document.getElementById('rv-bal').textContent = '$' + CARDS[idx].balance.toFixed(2);
+  totalUSD = parseFloat((totalUSD + usd).toFixed(2)); totalTxs++;
+  setP(100,'Recharge terminée !');
+  fill.className = 'pfill pfill-ok';
+  addL(`[OK] Carte rechargée — solde GPA: $${CARDS[idx].balance.toFixed(2)}`,'log-ok');
   updateMetrics();
+  document.getElementById('btn-recharge').disabled = false;
+  fill.className = 'pfill pfill-marq';
 }
 
-function deleteCard(idx) {
-  if(confirm('Supprimer la carte de ' + DB[idx].nom + ' ?')) {
-    DB.splice(idx, 1);
-    renderCards();
-    updateMetrics();
-  }
-}
-
-function openAddCard() {
-  const t = new Date();
-  document.getElementById('ac-em').value = t.toISOString().split('T')[0];
-  const e = new Date(t); e.setFullYear(e.getFullYear()+4);
-  document.getElementById('ac-exp').value = e.toISOString().split('T')[0];
-  document.getElementById('add-card-modal').classList.add('open');
-}
-function closeAddCard() { document.getElementById('add-card-modal').classList.remove('open'); }
-
-function addCard() {
-  const nom = document.getElementById('ac-nom').value;
-  const prenom = document.getElementById('ac-prenom').value;
-  const ccp = document.getElementById('ac-ccp').value;
-  const agence = document.getElementById('ac-agence').value;
-  const exp = document.getElementById('ac-exp').value;
-  if(!nom||!prenom||!ccp){alert('Veuillez remplir tous les champs.'); return;}
-  const expD = new Date(exp);
-  const expStr = (expD.getMonth()+1).toString().padStart(2,'0')+'/'+expD.getFullYear().toString().slice(-2);
-  const num = '4111 '+Math.floor(1000+Math.random()*9000)+' '+Math.floor(1000+Math.random()*9000)+' '+Math.floor(1000+Math.random()*9000);
-  DB.unshift({nom:prenom+' '+nom, num, ccp, agence, exp:expStr, statut:'En attente'});
-  closeAddCard();
-  renderCards();
-  renderCardPicker();
-  updateMetrics();
-}
-
-function renderHistory() {
-  const base = [
-    {hash:'0xab12...ef34',card:'4111 2345 6789 0001',holder:'Benali Mohamed',amt:10000,date:'15/05/2026',status:'ok'},
-    {hash:'0xcd34...gh56',card:'4111 2345 6789 0003',holder:'Khelil Youcef',amt:5000,date:'12/05/2026',status:'ok'},
-    {hash:'0xef56...ij78',card:'4111 2345 6789 0005',holder:'Mansouri Karim',amt:25000,date:'10/05/2026',status:'ok'},
-    {hash:'0xgh78...kl90',card:'4111 2345 6789 0007',holder:'Rahmani Omar',amt:7500,date:'08/05/2026',status:'pend'},
-  ];
-  const all = [...txHistory, ...base];
-  const el = document.getElementById('hist-list');
-  if(!el) return;
-  el.innerHTML = all.map(t => `
-    <div class="tx-item">
-      <div class="tx-icon ${t.status==='ok'?'tx-ok':t.status==='pend'?'tx-pend':'tx-fail'}"><i class="ti ti-${t.status==='ok'?'check':t.status==='pend'?'clock':'x'}" aria-hidden="true"></i></div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.holder} — ${t.card}</div>
-        <div style="font-family:var(--font-mono);font-size:10px;color:var(--color-text-secondary);">${t.hash} · ${t.date}</div>
+function renderCardsGrid(){
+  const grid = document.getElementById('cards-grid');
+  const empty = document.getElementById('cards-empty');
+  if(CARDS.length===0){ empty.style.display='flex'; grid.style.display='none'; return; }
+  empty.style.display='none'; grid.style.display='grid';
+  grid.innerHTML = CARDS.map((c,i)=>`
+    <div>
+      <div class="card-vis marqeta">
+        <div class="cv-logo marq">MARQETA SANDBOX · VISA</div>
+        <div class="cv-chip blue"></div>
+        <div class="cv-num light">${c.pan}</div>
+        <div class="cv-bot"><div><div class="cv-name-light">${c.user_name.toUpperCase()}</div><div class="cv-sub-light">VIRTUAL · ${c.type||'VIRTUAL'}</div></div><div class="cv-exp-light">${c.expiration}</div></div>
       </div>
-      <div style="font-size:13px;font-weight:500;color:var(--color-text-success);flex-shrink:0;">+${t.amt.toLocaleString()} DZD</div>
+      <div class="sec" style="padding:10px 12px;margin-bottom:0;">
+        <div class="irow"><span class="ilbl">Solde GPA</span><span class="ival" style="color:var(--color-text-success);">$${c.balance.toFixed(2)}</span></div>
+        <div class="irow"><span class="ilbl">Statut</span><span class="badge ba"><span style="width:6px;height:6px;border-radius:50%;background:var(--color-text-success);display:inline-block;"></span>${c.state}</span></div>
+        <div class="irow"><span class="ilbl">Token</span><span class="ival mono">${c.token}</span></div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button class="btn-marq" style="flex:1;justify-content:center;padding:6px;" onclick="quickRecharge(${i})"><i class="ti ti-bolt" aria-hidden="true" style="font-size:12px"></i>Recharger</button>
+          <button class="btn-outline" style="padding:6px 10px;" onclick="copyToken('${c.token}')"><i class="ti ti-copy" aria-hidden="true" style="font-size:12px"></i></button>
+        </div>
+      </div>
     </div>`).join('');
 }
 
-async function readChain() {
-  const log = document.getElementById('chain-log');
-  log.innerHTML = '<div class="log-line info">[rpc] Connexion à ' + POLYGON_RPC + '...</div>';
-  try {
-    const prov = new ethers.providers.JsonRpcProvider(POLYGON_RPC);
-    const ro = new ethers.Contract(DZD_CONTRACT, ERC20_ABI, prov);
-    log.innerHTML += '<div class="log-line info">[contract] Lecture symbol()...</div>';
-    const sym = await ro.symbol();
-    log.innerHTML += `<div class="log-line ok">[contract] symbol = ${sym}</div>`;
-    log.innerHTML += '<div class="log-line info">[contract] Lecture decimals()...</div>';
-    const dec = await ro.decimals();
-    log.innerHTML += `<div class="log-line ok">[contract] decimals = ${dec}</div>`;
-    const addr = walletAddr || DZD_CONTRACT;
-    log.innerHTML += `<div class="log-line info">[contract] balanceOf(${addr.slice(0,10)}...)...</div>`;
-    const bal = await ro.balanceOf(addr);
-    const fmt = parseFloat(ethers.utils.formatUnits(bal, dec)).toLocaleString();
-    log.innerHTML += `<div class="log-line ok">[contract] balance = ${fmt} ${sym}</div>`;
-    log.innerHTML += '<div class="log-line ok">[rpc] Lecture terminée avec succès.</div>';
-    log.scrollTop = log.scrollHeight;
-  } catch(e) {
-    log.innerHTML += `<div class="log-line err">[erreur] ${e.message}</div>`;
+function quickRecharge(i){
+  goPage('recharger');
+  document.getElementById('r-card-sel').value = i;
+  selCard();
+}
+
+function addApiLog(method, ep, req, resp){
+  const entry = { time: new Date().toLocaleTimeString(), method, ep, req: JSON.stringify(req,null,2), resp: JSON.stringify(resp,null,2) };
+  apiLogLines.unshift(entry);
+  renderApiLog();
+}
+
+function renderApiLog(){
+  const el = document.getElementById('api-log');
+  if(!el) return;
+  if(apiLogLines.length===0){ el.innerHTML='<div class="log-info">[api] Aucune requête pour l\'instant...</div>'; return; }
+  el.innerHTML = apiLogLines.map(e=>`
+    <div style="margin-bottom:8px;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:6px;">
+      <div class="log-marq">[${e.time}] ${e.method} ${CFG.url}${e.ep}</div>
+      <div class="log-info">→ req: ${e.req.slice(0,120)}...</div>
+      <div class="log-ok">← res: ${e.resp.slice(0,120)}...</div>
+    </div>`).join('');
+}
+
+function clearLog(){ apiLogLines=[]; renderApiLog(); }
+
+async function testApi(){
+  const method = document.getElementById('test-method').value;
+  const ep = document.getElementById('test-ep').value.trim();
+  const bodyStr = document.getElementById('test-body').value.trim();
+  if(!ep){ alert('Entrez un endpoint.'); return; }
+  let body = null;
+  try{ if(bodyStr) body = JSON.parse(bodyStr); } catch(e){ alert('JSON invalide.'); return; }
+  const fakeResp = { token: randomHex(10), status: 'SUCCESS', created_time: new Date().toISOString() };
+  addApiLog(method, ep, body||{}, fakeResp);
+  if(!isDemo && CFG.token && CFG.secret){
+    try {
+      const headers = { 'Content-Type':'application/json', 'Authorization':'Basic '+btoa(CFG.token+':'+CFG.secret) };
+      const opts = { method, headers };
+      if(body && method!=='GET') opts.body = JSON.stringify(body);
+      const res = await fetch(CFG.url+ep, opts);
+      const data = await res.json();
+      addApiLog(method+'_real', ep, body||{}, data);
+    } catch(e) {
+      addApiLog('ERROR', ep, {}, { error: e.message });
+    }
   }
 }
 
-function copyAddr() {
-  navigator.clipboard?.writeText(DZD_CONTRACT);
-  const el = document.getElementById('copy-ok');
-  el.style.display = 'block';
-  setTimeout(() => el.style.display = 'none', 2000);
+function copyToken(t){ navigator.clipboard?.writeText(t); }
+function copyCode(){
+  const c = document.getElementById('code-block').innerText;
+  navigator.clipboard?.writeText(c);
+  const el = document.getElementById('copy-ok'); el.style.display='block';
+  setTimeout(()=>el.style.display='none',2000);
 }
+function randomHex(n){ return Array.from({length:n},()=>Math.floor(Math.random()*16).toString(16)).join(''); }
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 </script>
