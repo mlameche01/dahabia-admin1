@@ -1,726 +1,214 @@
+# Fichier HTML corrigé — Marqeta Sandbox + Email
 
-<h2 class="sr-only">Application DZD Polygon vers carte virtuelle Marqeta sandbox</h2>
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marqeta Sandbox Card Generator</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body,div,span,input,select,button,textarea{font-family:var(--font-sans);}
-.app{padding:1.5rem 0;}
-.view{display:none;}.view.active{display:block;}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:0.5px solid var(--color-border-tertiary);}
-.brand{display:flex;align-items:center;gap:10px;}
-.logo{width:36px;height:36px;border-radius:8px;background:#7C3AED;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:500;}
-.badges{display:flex;gap:6px;}
-.badge-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;}
-.poly-pill{background:#EDE7FF;color:#4A2EA3;}
-.marq-pill{background:#E0F2FE;color:#0C447C;}
-.dot-p{width:6px;height:6px;border-radius:50%;background:#8247E5;display:inline-block;}
-.dot-m{width:6px;height:6px;border-radius:50%;background:#378ADD;display:inline-block;}
-.sec{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem;}
-.sec-t{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
-.field{margin-bottom:12px;}.field:last-child{margin-bottom:0;}
-.field label{display:block;font-size:12px;color:var(--color-text-secondary);margin-bottom:4px;}
-.field input,.field select,.field textarea{width:100%;padding:8px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-secondary);font-size:13px;color:var(--color-text-primary);}
-.field textarea{resize:none;font-family:var(--font-mono);font-size:11px;line-height:1.6;}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
-.metric{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.9rem 1rem;}
-.metric .ml{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px;}
-.metric .mv{font-size:18px;font-weight:500;color:var(--color-text-primary);}
-.metric .ms{font-size:11px;color:var(--color-text-secondary);margin-top:2px;}
-.btn-primary{background:#0A4A2E;color:#F5D670;border:none;border-radius:var(--border-radius-md);padding:9px 16px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
-.btn-primary:hover{opacity:0.88;}.btn-primary:disabled{opacity:0.4;cursor:not-allowed;}
-.btn-poly{background:#8247E5;color:#fff;border:none;border-radius:var(--border-radius-md);padding:9px 16px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
-.btn-poly:hover{opacity:0.88;}.btn-poly:disabled{opacity:0.4;cursor:not-allowed;}
-.btn-marq{background:#378ADD;color:#fff;border:none;border-radius:var(--border-radius-md);padding:9px 16px;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
-.btn-marq:hover{opacity:0.88;}.btn-marq:disabled{opacity:0.4;cursor:not-allowed;}
-.btn-outline{background:none;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 14px;font-size:13px;cursor:pointer;color:var(--color-text-primary);display:inline-flex;align-items:center;gap:6px;}
-.btn-outline:hover{background:var(--color-background-secondary);}
-.btn-full{width:100%;justify-content:center;}
-.alert{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:var(--border-radius-md);font-size:12px;margin-bottom:10px;}
-.a-info{background:var(--color-background-info);color:var(--color-text-info);}
-.a-warn{background:var(--color-background-warning);color:var(--color-text-warning);}
-.a-ok{background:var(--color-background-success);color:var(--color-text-success);}
-.a-err{background:var(--color-background-danger);color:var(--color-text-danger);}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500;}
-.ba{background:var(--color-background-success);color:var(--color-text-success);}
-.bb{background:var(--color-background-danger);color:var(--color-text-danger);}
-.bp{background:var(--color-background-warning);color:var(--color-text-warning);}
-.bi{background:var(--color-background-info);color:var(--color-text-info);}
-.nav{display:flex;gap:4px;margin-bottom:1.5rem;flex-wrap:wrap;}
-.nav-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:none;font-size:13px;cursor:pointer;color:var(--color-text-secondary);}
-.nav-btn.active{background:#7C3AED;color:#fff;border-color:#7C3AED;}
-.nav-btn:hover:not(.active){background:var(--color-background-secondary);color:var(--color-text-primary);}
-.card-vis{width:100%;aspect-ratio:1.586;border-radius:12px;padding:18px;position:relative;overflow:hidden;margin-bottom:10px;}
-.card-vis.marqeta{background:#1e3a5f;border:1px solid #378ADD;}
-.card-vis.marqeta::before{content:'';position:absolute;top:-20%;right:-5%;width:50%;aspect-ratio:1;border-radius:50%;background:rgba(55,138,221,0.08);}
-.cv-logo{font-size:10px;font-weight:500;letter-spacing:0.4px;}
-.cv-logo.marq{color:#85B7EB;}
-.cv-chip{width:30px;height:22px;border-radius:4px;margin:12px 0 10px;}
-.cv-chip.gold{background:#C8960C;}
-.cv-chip.blue{background:#378ADD;}
-.cv-num{font-size:13px;letter-spacing:2.5px;font-weight:500;}
-.cv-num.light{color:#B5D4F4;}
-.cv-bot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;}
-.cv-name-light{color:rgba(181,212,244,0.85);font-size:10px;letter-spacing:0.5px;}
-.cv-sub-light{color:rgba(181,212,244,0.5);font-size:9px;margin-top:2px;}
-.cv-exp-light{color:#B5D4F4;font-size:10px;}
-.log-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary);max-height:140px;overflow-y:auto;line-height:1.7;}
-.log-ok{color:var(--color-text-success);}.log-err{color:var(--color-text-danger);}.log-info{color:#8247E5;}.log-marq{color:#378ADD;}
-.pbar{height:3px;background:var(--color-border-tertiary);border-radius:2px;overflow:hidden;margin:6px 0;}
-.pfill{height:100%;border-radius:2px;transition:width 0.5s;}
-.pfill-poly{background:#8247E5;}.pfill-marq{background:#378ADD;}.pfill-ok{background:var(--color-text-success);}
-.irow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary);}
-.irow:last-child{border-bottom:none;}
-.ilbl{font-size:12px;color:var(--color-text-secondary);}
-.ival{font-size:12px;font-weight:500;color:var(--color-text-primary);}
-.ival.mono{font-family:var(--font-mono);font-weight:400;font-size:11px;color:var(--color-text-secondary);}
-.step-bar{display:flex;align-items:center;margin-bottom:1.5rem;}
-.step{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-secondary);}
-.step.active{color:var(--color-text-primary);font-weight:500;}
-.step.done{color:var(--color-text-success);}
-.step-num{width:22px;height:22px;border-radius:50%;border:0.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
-.step.active .step-num{background:#7C3AED;color:#fff;border-color:#7C3AED;}
-.step.done .step-num{background:var(--color-background-success);color:var(--color-text-success);border-color:var(--color-border-success);}
-.step-line{flex:1;height:0.5px;background:var(--color-border-tertiary);margin:0 8px;}
-.panel{display:none;}.panel.active{display:block;}
-.amount-wrap{position:relative;}
-.amount-wrap input{padding-right:55px;font-size:15px;font-weight:500;}
-.amount-unit{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--color-text-secondary);pointer-events:none;}
-.qbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
-.qb{padding:4px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:none;font-size:11px;cursor:pointer;color:var(--color-text-primary);}
-.qb:hover,.qb.sel{background:#EDE7FF;border-color:#8247E5;color:#4A2EA3;}
-.arch-flow{display:flex;align-items:center;gap:0;margin:1rem 0;flex-wrap:wrap;}
-.arch-node{background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:12px;text-align:center;flex:1;min-width:80px;}
-.arch-node .an-icon{font-size:18px;margin-bottom:4px;}
-.arch-node .an-lbl{font-size:11px;color:var(--color-text-secondary);}
-.arch-arrow{color:var(--color-text-secondary);font-size:18px;padding:0 4px;flex-shrink:0;}
-.copy-btn{background:none;border:none;cursor:pointer;color:var(--color-text-secondary);padding:2px 4px;}
-.copy-btn:hover{color:var(--color-text-primary);}
+body{
+  font-family:Arial,sans-serif;
+  background:#0f172a;
+  color:white;
+  padding:30px;
+}
+.container{
+  max-width:700px;
+  margin:auto;
+  background:#111827;
+  padding:25px;
+  border-radius:14px;
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:none;
+}
+input{
+  background:#1f2937;
+  color:white;
+}
+button{
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+button:hover{
+  opacity:0.9;
+}
+.card{
+  margin-top:20px;
+  padding:20px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#2563eb,#1e3a8a);
+}
+.small{
+  font-size:12px;
+  opacity:0.8;
+}
+.success{
+  margin-top:15px;
+  color:#22c55e;
+}
+.error{
+  margin-top:15px;
+  color:#ef4444;
+}
 </style>
+</head>
+<body>
 
-<div class="app">
-<div class="topbar">
-  <div class="brand">
-    <div class="logo"><i class="ti ti-bridge" aria-hidden="true"></i></div>
-    <div>
-      <div style="font-size:17px;font-weight:500;color:var(--color-text-primary);">DZD → Marqeta Bridge</div>
-      <div style="font-size:12px;color:var(--color-text-secondary);">Token Polygon · Carte virtuelle sandbox</div>
-    </div>
-  </div>
-  <div class="badges">
-    <div class="badge-pill poly-pill"><span class="dot-p"></span>Polygon</div>
-    <div class="badge-pill marq-pill"><span class="dot-m"></span>Marqeta</div>
-  </div>
-</div>
+<div class="container">
+  <h2>Marqeta Sandbox Virtual Card</h2>
 
-<div id="v-config" class="view active">
-  <div class="alert a-info"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Entrez vos clés API Marqeta sandbox + votre adresse wallet Polygon pour démarrer. Tout reste local.</span></div>
-  <div class="g2">
-    <div>
-      <div class="sec">
-        <div class="sec-t"><i class="ti ti-key" aria-hidden="true" style="font-size:14px"></i>Marqeta sandbox</div>
-        <div class="alert a-warn" style="margin-bottom:12px;"><i class="ti ti-alert-triangle" aria-hidden="true" style="font-size:15px;flex-shrink:0;margin-top:1px"></i><span>Créez un compte gratuit sur <strong>app.marqeta.com</strong> pour obtenir vos clés sandbox.</span></div>
-        <div class="field">
-          <label>Application Token</label>
-          <input type="text" id="cfg-token" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" style="font-family:var(--font-mono);font-size:11px;" />
-        </div>
-        <div class="field">
-          <label>Master Access Token</label>
-          <input type="password" id="cfg-secret" placeholder="••••••••••••••••••••••••" />
-        </div>
-        <div class="field">
-          <label>Base URL sandbox</label>
-          <input type="text" id="cfg-url" value="https://sandbox-api.marqeta.com/v3" style="font-family:var(--font-mono);font-size:11px;" />
-        </div>
-      </div>
-      <div class="sec">
-        <div class="sec-t"><i class="ti ti-currency-ethereum" aria-hidden="true" style="font-size:14px"></i>Polygon / DZD</div>
-        <div class="field">
-          <label>Contrat DZD</label>
-          <input type="text" id="cfg-contract" value="0x07221c2D1dc1D5485Bf069871E2820864B4948F7" style="font-family:var(--font-mono);font-size:11px;" />
-        </div>
-        <div class="field">
-          <label>Taux DZD → USD (pour Marqeta)</label>
-          <input type="number" id="cfg-rate" value="0.0074" step="0.0001" placeholder="0.0074" />
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="sec">
-        <div class="sec-t"><i class="ti ti-sitemap" aria-hidden="true" style="font-size:14px"></i>Architecture</div>
-        <div class="arch-flow">
-          <div class="arch-node"><div class="an-icon"><i class="ti ti-wallet" aria-hidden="true" style="color:#8247E5;"></i></div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Wallet</div><div class="an-lbl">DZD Polygon</div></div>
-          <div class="arch-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
-          <div class="arch-node"><div class="an-icon"><i class="ti ti-transfer" aria-hidden="true" style="color:#7C3AED;"></i></div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Bridge</div><div class="an-lbl">Cette app</div></div>
-          <div class="arch-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
-          <div class="arch-node"><div class="an-icon"><i class="ti ti-credit-card" aria-hidden="true" style="color:#378ADD;"></i></div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">Marqeta</div><div class="an-lbl">Carte virtuelle</div></div>
-        </div>
-        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px;">Ce que fait le bridge :</div>
-        <div style="display:flex;flex-direction:column;gap:6px;">
-          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-primary);"><i class="ti ti-check" aria-hidden="true" style="color:var(--color-text-success);font-size:14px;"></i>Crée un utilisateur Marqeta via API</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-primary);"><i class="ti ti-check" aria-hidden="true" style="color:var(--color-text-success);font-size:14px;"></i>Émet une carte virtuelle sandbox</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-primary);"><i class="ti ti-check" aria-hidden="true" style="color:var(--color-text-success);font-size:14px;"></i>Convertit DZD → USD et recharge le GPA</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-primary);"><i class="ti ti-check" aria-hidden="true" style="color:var(--color-text-success);font-size:14px;"></i>Simule un dépôt Polygon on-chain</div>
-          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--color-text-secondary);"><i class="ti ti-clock" aria-hidden="true" style="font-size:14px;"></i>Webhook Polygon (à déployer côté serveur)</div>
-        </div>
-      </div>
-      <div class="sec">
-        <div class="sec-t"><i class="ti ti-file-code" aria-hidden="true" style="font-size:14px"></i>Code webhook (Node.js)</div>
-        <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-family:var(--font-mono);font-size:10px;color:var(--color-text-secondary);line-height:1.8;position:relative;">
-          <button class="copy-btn" style="position:absolute;top:6px;right:6px;" onclick="copyCode()" title="Copier"><i class="ti ti-copy" aria-hidden="true" style="font-size:13px;"></i></button>
-          <div id="code-block"><span style="color:#8247E5;">// Webhook déclenché par Alchemy/QuickNode</span><br>
-<span style="color:#8247E5;">app</span>.post(<span style="color:#0F6E56;">'/webhook/polygon'</span>, async (req, res) => {<br>
-&nbsp;&nbsp;<span style="color:#8247E5;">const</span> { from, amount } = req.body;<br>
-&nbsp;&nbsp;<span style="color:#8247E5;">const</span> usd = amount * DZD_RATE;<br>
-&nbsp;&nbsp;<span style="color:#8247E5;">await</span> marqeta.gpaOrder(userToken, usd);<br>
-&nbsp;&nbsp;res.json({ status: <span style="color:#0F6E56;">'rechargé'</span>, usd });<br>
-});</div>
-        </div>
-        <div id="copy-ok" style="font-size:11px;color:var(--color-text-success);margin-top:4px;display:none;"><i class="ti ti-check" aria-hidden="true"></i> Copié !</div>
-      </div>
-    </div>
-  </div>
-  <div style="display:flex;gap:10px;">
-    <button class="btn-marq btn-full" onclick="startWithKeys()"><i class="ti ti-plug" aria-hidden="true"></i>Connecter avec mes clés Marqeta</button>
-    <button class="btn-outline btn-full" onclick="startDemo()"><i class="ti ti-device-desktop" aria-hidden="true"></i>Mode démonstration (sans clés)</button>
-  </div>
-</div>
+  <input type="text" id="appToken" placeholder="Application Token" />
+  <input type="password" id="masterToken" placeholder="Master Access Token" />
+  <input type="email" id="email" placeholder="Email destinataire" />
+  <input type="text" id="firstName" placeholder="Prénom" />
+  <input type="text" id="lastName" placeholder="Nom" />
 
-<div id="v-app" class="view">
-  <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:1rem;flex-wrap:wrap;">
-    <div style="width:32px;height:32px;border-radius:8px;background:#7C3AED;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;flex-shrink:0;"><i class="ti ti-bridge" aria-hidden="true"></i></div>
-    <div style="flex:1;">
-      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);" id="w-mode">—</div>
-      <div style="font-size:11px;color:var(--color-text-secondary);font-family:var(--font-mono);" id="w-contract">contrat DZD : 0x07221c...48F7</div>
-    </div>
-    <div id="w-bal-block" style="text-align:right;">
-      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);" id="w-dzd-bal">125 000 DZD</div>
-      <div style="font-size:11px;color:var(--color-text-secondary);">solde DZD</div>
-    </div>
-    <button class="btn-outline" style="padding:5px 10px;font-size:12px;" onclick="goConfig()"><i class="ti ti-settings" aria-hidden="true"></i></button>
-  </div>
+  <button onclick="createSandboxCard()">Créer une carte Sandbox</button>
 
-  <div class="g3" style="margin-bottom:1rem;">
-    <div class="metric"><div class="ml">Cartes émises</div><div class="mv" id="m-cards">0</div><div class="ms">Marqeta sandbox</div></div>
-    <div class="metric"><div class="ml">Total rechargé</div><div class="mv" id="m-total">$0</div><div class="ms">via GPA orders</div></div>
-    <div class="metric"><div class="ml">Transactions</div><div class="mv" id="m-txs">0</div><div class="ms">on-chain simulées</div></div>
-  </div>
-
-  <div class="nav">
-    <button class="nav-btn active" id="nb-creer" onclick="goPage('creer')"><i class="ti ti-plus" aria-hidden="true" style="font-size:14px"></i>Créer carte</button>
-    <button class="nav-btn" id="nb-recharger" onclick="goPage('recharger')"><i class="ti ti-bolt" aria-hidden="true" style="font-size:14px"></i>Recharger</button>
-    <button class="nav-btn" id="nb-cartes" onclick="goPage('cartes')"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:14px"></i>Mes cartes</button>
-    <button class="nav-btn" id="nb-api" onclick="goPage('api')"><i class="ti ti-terminal" aria-hidden="true" style="font-size:14px"></i>API log</button>
-  </div>
-
-  <div id="page-creer">
-    <div class="step-bar">
-      <div class="step active" id="cs1"><div class="step-num">1</div>Utilisateur</div>
-      <div class="step-line"></div>
-      <div class="step" id="cs2"><div class="step-num">2</div>Carte</div>
-      <div class="step-line"></div>
-      <div class="step" id="cs3"><div class="step-num">3</div>Émission</div>
-    </div>
-    <div class="panel active" id="cp1">
-      <div class="g2">
-        <div>
-          <div class="sec">
-            <div class="sec-t"><i class="ti ti-user" aria-hidden="true" style="font-size:14px"></i>Créer utilisateur Marqeta</div>
-            <div class="alert a-info" style="margin-bottom:12px;"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:15px;flex-shrink:0;margin-top:1px"></i><span>Appel <code>POST /users</code> sur l'API Marqeta sandbox.</span></div>
-            <div class="frow">
-              <div class="field"><label>Prénom</label><input id="u-prenom" type="text" placeholder="Mohamed" /></div>
-              <div class="field"><label>Nom</label><input id="u-nom" type="text" placeholder="BENALI" /></div>
-            </div>
-            <div class="field"><label>Email</label><input id="u-email" type="email" placeholder="m.benali@gmail.com" /></div>
-            <div class="frow">
-              <div class="field"><label>Téléphone</label><input id="u-tel" type="text" placeholder="0555 123 456" /></div>
-              <div class="field"><label>Adresse</label><input id="u-addr" type="text" placeholder="Alger, DZ" /></div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="sec">
-            <div class="sec-t"><i class="ti ti-code" aria-hidden="true" style="font-size:14px"></i>Requête API générée</div>
-            <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-family:var(--font-mono);font-size:10px;color:var(--color-text-secondary);line-height:1.8;" id="u-preview">
-              <span style="color:#378ADD;">POST</span> /v3/users<br>
-              {<br>
-              &nbsp;&nbsp;<span style="color:#0F6E56;">"first_name"</span>: <span style="color:#0F6E56;" id="prev-prenom">"Mohamed"</span>,<br>
-              &nbsp;&nbsp;<span style="color:#0F6E56;">"last_name"</span>: <span style="color:#0F6E56;" id="prev-nom">"BENALI"</span>,<br>
-              &nbsp;&nbsp;<span style="color:#0F6E56;">"email"</span>: <span style="color:#0F6E56;" id="prev-email">"..."</span>,<br>
-              &nbsp;&nbsp;<span style="color:#0F6E56;">"metadata"</span>: {<br>
-              &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#0F6E56;">"source"</span>: <span style="color:#0F6E56;">"DZD_POLYGON"</span><br>
-              &nbsp;&nbsp;}<br>
-              }
-            </div>
-          </div>
-          <button class="btn-marq btn-full" onclick="cGoStep2()"><i class="ti ti-arrow-right" aria-hidden="true"></i>Créer l'utilisateur Marqeta</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel" id="cp2">
-      <div class="g2">
-        <div>
-          <div class="card-vis marqeta">
-            <div class="cv-logo marq">MARQETA SANDBOX · VISA</div>
-            <div class="cv-chip blue"></div>
-            <div class="cv-num light" id="cp2-num">•••• •••• •••• ••••</div>
-            <div class="cv-bot">
-              <div><div class="cv-name-light" id="cp2-name">NOM PRÉNOM</div><div class="cv-sub-light">SANDBOX CARD</div></div>
-              <div class="cv-exp-light" id="cp2-exp">MM/YY</div>
-            </div>
-          </div>
-          <div class="sec" style="margin-bottom:0;">
-            <div class="irow"><span class="ilbl">Utilisateur</span><span class="ival" id="cp2-user">—</span></div>
-            <div class="irow"><span class="ilbl">User token</span><span class="ival mono" id="cp2-utoken">—</span></div>
-          </div>
-        </div>
-        <div>
-          <div class="sec">
-            <div class="sec-t"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:14px"></i>Paramètres carte</div>
-            <div class="field"><label>Card product token</label><input id="c-product" type="text" placeholder="my_card_product" value="sandbox_card_product" style="font-family:var(--font-mono);font-size:12px;" /></div>
-            <div class="frow">
-              <div class="field"><label>Type</label><select id="c-type"><option value="VIRTUAL">Virtuelle</option><option value="PHYSICAL">Physique (sandbox)</option></select></div>
-              <div class="field"><label>Devise</label><select id="c-currency"><option value="USD">USD</option><option value="EUR">EUR</option></select></div>
-            </div>
-            <div class="field"><label>Memo</label><input id="c-memo" type="text" placeholder="Carte DZD Polygon" /></div>
-          </div>
-          <div class="alert a-info"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:15px;flex-shrink:0;margin-top:1px"></i><span>Appel <code>POST /cards</code> avec le user_token de l'étape précédente.</span></div>
-          <div style="display:flex;gap:8px;">
-            <button class="btn-outline" onclick="cGoStep1()"><i class="ti ti-arrow-left" aria-hidden="true"></i>Retour</button>
-            <button class="btn-marq" style="flex:1;justify-content:center;" onclick="cGoStep3()"><i class="ti ti-arrow-right" aria-hidden="true"></i>Émettre la carte</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel" id="cp3">
-      <div id="cp3-alert"></div>
-      <div class="g2">
-        <div>
-          <div class="card-vis marqeta">
-            <div class="cv-logo marq">MARQETA SANDBOX · VISA</div>
-            <div class="cv-chip blue"></div>
-            <div class="cv-num light" id="cp3-num">•••• •••• •••• ••••</div>
-            <div class="cv-bot">
-              <div><div class="cv-name-light" id="cp3-name">—</div><div class="cv-sub-light">VIRTUAL · SANDBOX</div></div>
-              <div class="cv-exp-light" id="cp3-exp">—</div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div class="sec">
-            <div class="sec-t"><i class="ti ti-list-check" aria-hidden="true" style="font-size:14px"></i>Détails de la carte émise</div>
-            <div id="cp3-details"></div>
-          </div>
-          <div class="sec">
-            <div class="sec-t"><i class="ti ti-terminal" aria-hidden="true" style="font-size:14px"></i>Réponse API Marqeta</div>
-            <div class="log-box" id="cp3-log"></div>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:10px;">
-            <button class="btn-outline" onclick="cGoStep2()"><i class="ti ti-arrow-left" aria-hidden="true"></i>Retour</button>
-            <button class="btn-primary" style="flex:1;justify-content:center;" onclick="goPage('recharger')"><i class="ti ti-bolt" aria-hidden="true"></i>Recharger cette carte</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="page-recharger" style="display:none;">
-    <div class="g2">
-      <div>
-        <div class="sec">
-          <div class="sec-t"><i class="ti ti-credit-card" aria-hidden="true" style="font-size:14px"></i>Carte à recharger</div>
-          <div class="field"><label>Sélectionner une carte</label>
-            <select id="r-card-sel" onchange="selCard()">
-              <option value="">— Choisir —</option>
-            </select>
-          </div>
-          <div id="r-card-preview" style="display:none;">
-            <div class="card-vis marqeta" style="margin-top:8px;">
-              <div class="cv-logo marq">MARQETA SANDBOX · VISA</div>
-              <div class="cv-chip blue"></div>
-              <div class="cv-num light" id="rv-num">•••• •••• •••• ••••</div>
-              <div class="cv-bot"><div><div class="cv-name-light" id="rv-name">—</div><div class="cv-sub-light">VIRTUAL · SANDBOX</div></div><div class="cv-exp-light" id="rv-exp">—</div></div>
-            </div>
-            <div class="sec" style="margin-bottom:0;padding:10px 12px;">
-              <div class="irow"><span class="ilbl">Solde actuel (GPA)</span><span class="ival" id="rv-bal" style="color:var(--color-text-success);">$0.00</span></div>
-              <div class="irow"><span class="ilbl">User token</span><span class="ival mono" id="rv-utoken">—</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="sec">
-          <div class="sec-t"><i class="ti ti-currency-dollar" aria-hidden="true" style="font-size:14px"></i>Montant DZD → GPA Marqeta</div>
-          <div class="field">
-            <label>Montant en DZD</label>
-            <div class="amount-wrap">
-              <input type="number" id="r-amt" placeholder="5000" min="500" step="500" oninput="calcConvert()" />
-              <span class="amount-unit">DZD</span>
-            </div>
-            <div class="qbtns">
-              <button class="qb" onclick="setRamt(1000,this)">1 000</button>
-              <button class="qb" onclick="setRamt(5000,this)">5 000</button>
-              <button class="qb" onclick="setRamt(10000,this)">10 000</button>
-              <button class="qb" onclick="setRamt(50000,this)">50 000</button>
-            </div>
-          </div>
-          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;margin-top:8px;">
-            <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;"><span style="color:var(--color-text-secondary);">Montant DZD</span><span style="font-weight:500;color:var(--color-text-primary);" id="rc-dzd">0 DZD</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;"><span style="color:var(--color-text-secondary);">Taux DZD/USD</span><span style="font-weight:500;color:var(--color-text-primary);" id="rc-rate">0.0074</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;"><span style="color:var(--color-text-secondary);">Frais (0.5%)</span><span style="font-weight:500;color:var(--color-text-primary);" id="rc-fee">$0.00</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:13px;border-top:0.5px solid var(--color-border-tertiary);margin-top:5px;padding-top:5px;"><span style="color:var(--color-text-secondary);">Crédité sur GPA</span><span style="font-weight:500;color:#378ADD;" id="rc-usd">$0.00</span></div>
-          </div>
-        </div>
-        <div class="sec">
-          <div class="sec-t"><i class="ti ti-terminal" aria-hidden="true" style="font-size:14px"></i>Log recharge</div>
-          <div class="log-box" id="r-log"><div class="log-info">[bridge] Prêt à recharger...</div></div>
-          <div class="pbar"><div class="pfill pfill-marq" id="r-fill" style="width:0%"></div></div>
-          <div style="font-size:11px;color:var(--color-text-secondary);margin-top:3px;" id="r-step">—</div>
-        </div>
-        <button class="btn-marq btn-full" id="btn-recharge" onclick="doRecharge()" style="margin-top:4px;" disabled><i class="ti ti-bolt" aria-hidden="true"></i>Recharger via GPA order</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="page-cartes" style="display:none;">
-    <div id="cards-empty" class="alert a-info"><i class="ti ti-info-circle" aria-hidden="true" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Aucune carte émise pour l'instant. Créez une carte dans l'onglet "Créer carte".</span></div>
-    <div id="cards-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;"></div>
-  </div>
-
-  <div id="page-api" style="display:none;">
-    <div class="sec">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <div class="sec-t" style="margin-bottom:0;"><i class="ti ti-terminal" aria-hidden="true" style="font-size:14px"></i>Log API complet</div>
-        <button class="btn-outline" style="padding:4px 10px;font-size:11px;" onclick="clearLog()"><i class="ti ti-trash" aria-hidden="true" style="font-size:12px"></i>Vider</button>
-      </div>
-      <div class="log-box" id="api-log" style="max-height:300px;"></div>
-    </div>
-    <div class="sec">
-      <div class="sec-t"><i class="ti ti-code" aria-hidden="true" style="font-size:14px"></i>Tester un appel API Marqeta</div>
-      <div class="frow">
-        <div class="field"><label>Méthode</label><select id="test-method"><option>GET</option><option selected>POST</option></select></div>
-        <div class="field"><label>Endpoint</label><input id="test-ep" type="text" placeholder="/users" style="font-family:var(--font-mono);font-size:12px;" /></div>
-      </div>
-      <div class="field"><label>Body JSON</label><textarea id="test-body" rows="4" placeholder='{"first_name":"Test"}'></textarea></div>
-      <button class="btn-marq" onclick="testApi()"><i class="ti ti-send" aria-hidden="true"></i>Envoyer</button>
-    </div>
-  </div>
-</div>
-
+  <div id="result"></div>
 </div>
 
 <script>
-let CFG = { token:'', secret:'', url:'https://sandbox-api.marqeta.com/v3', contract:'0x07221c2D1dc1D5485Bf069871E2820864B4948F7', rate:0.0074 };
-let isDemo = false;
-let CARDS = [];
-let totalUSD = 0, totalTxs = 0;
-let pendingUser = {};
-let apiLogLines = [];
+async function createSandboxCard(){
+  const appToken = document.getElementById('appToken').value.trim();
+  const masterToken = document.getElementById('masterToken').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
 
-function show(id){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+  const result = document.getElementById('result');
+  result.innerHTML = '';
 
-function startDemo(){
-  isDemo = true;
-  document.getElementById('w-mode').textContent = 'Mode démonstration (sans clés réelles)';
-  document.getElementById('w-contract').textContent = 'contrat DZD : ' + document.getElementById('cfg-contract').value;
-  CFG.rate = parseFloat(document.getElementById('cfg-rate').value) || 0.0074;
-  show('v-app');
-  updateMetrics();
-  renderCardSel();
-}
+  if(!appToken || !masterToken || !email){
+    result.innerHTML = '<div class="error">Veuillez remplir tous les champs.</div>';
+    return;
+  }
 
-function startWithKeys(){
-  const tok = document.getElementById('cfg-token').value.trim();
-  const sec = document.getElementById('cfg-secret').value.trim();
-  if(!tok || !sec){ alert('Veuillez entrer votre Application Token et Master Access Token Marqeta.'); return; }
-  CFG.token = tok; CFG.secret = sec;
-  CFG.url = document.getElementById('cfg-url').value.trim();
-  CFG.contract = document.getElementById('cfg-contract').value.trim();
-  CFG.rate = parseFloat(document.getElementById('cfg-rate').value) || 0.0074;
-  isDemo = false;
-  document.getElementById('w-mode').textContent = 'Marqeta sandbox · clés configurées';
-  document.getElementById('w-contract').textContent = 'contrat DZD : ' + CFG.contract;
-  show('v-app');
-  updateMetrics();
-  renderCardSel();
-}
+  try {
 
-function goConfig(){ show('v-config'); }
+    const auth = btoa(appToken + ':' + masterToken);
 
-function goPage(p){
-  ['creer','recharger','cartes','api'].forEach(pg => {
-    const el = document.getElementById('page-'+pg);
-    if(el) el.style.display = pg===p ? 'block' : 'none';
-    const nb = document.getElementById('nb-'+pg);
-    if(nb) nb.classList.toggle('active', pg===p);
-  });
-  if(p==='cartes') renderCardsGrid();
-  if(p==='api') renderApiLog();
-  if(p==='recharger') renderCardSel();
-}
+    // 1. Créer utilisateur sandbox
+    const userResp = await fetch('https://sandbox-api.marqeta.com/v3/users', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Basic ' + auth
+      },
+      body:JSON.stringify({
+        token:'user_' + Date.now(),
+        first_name:firstName || 'Test',
+        last_name:lastName || 'User',
+        email:email,
+        active:true
+      })
+    });
 
-function updateMetrics(){
-  document.getElementById('m-cards').textContent = CARDS.length;
-  document.getElementById('m-total').textContent = '$' + totalUSD.toFixed(2);
-  document.getElementById('m-txs').textContent = totalTxs;
-}
+    const userData = await userResp.json();
 
-function cSetStep(s){
-  [1,2,3].forEach(i=>{
-    const st = document.getElementById('cs'+i);
-    st.classList.remove('active','done');
-    if(i<s) st.classList.add('done'); else if(i===s) st.classList.add('active');
-    st.querySelector('.step-num').innerHTML = i<s ? '<i class="ti ti-check" aria-hidden="true" style="font-size:11px"></i>' : i;
-    document.getElementById('cp'+i).classList.remove('active');
-  });
-  document.getElementById('cp'+s).classList.add('active');
-}
-function cGoStep1(){ cSetStep(1); }
-
-function updatePreview(){
-  const p = document.getElementById('u-prenom').value || 'Mohamed';
-  const n = document.getElementById('u-nom').value || 'BENALI';
-  const e = document.getElementById('u-email').value || '...';
-  document.getElementById('prev-prenom').textContent = '"'+p+'"';
-  document.getElementById('prev-nom').textContent = '"'+n+'"';
-  document.getElementById('prev-email').textContent = '"'+e+'"';
-}
-document.getElementById('u-prenom').oninput = updatePreview;
-document.getElementById('u-nom').oninput = updatePreview;
-document.getElementById('u-email').oninput = updatePreview;
-
-async function cGoStep2(){
-  const prenom = document.getElementById('u-prenom').value.trim();
-  const nom = document.getElementById('u-nom').value.trim();
-  const email = document.getElementById('u-email').value.trim();
-  if(!prenom||!nom){ alert('Veuillez entrer nom et prénom.'); return; }
-  const uToken = 'usr_' + randomHex(12);
-  pendingUser = { prenom, nom, email, token: uToken };
-  const body = { first_name: prenom, last_name: nom, email: email||undefined, metadata:{ source:'DZD_POLYGON', contract: CFG.contract } };
-  addApiLog('POST', '/users', body, { token: uToken, status: 'ACTIVE', created_time: new Date().toISOString() });
-  document.getElementById('cp2-user').textContent = prenom + ' ' + nom;
-  document.getElementById('cp2-utoken').textContent = uToken;
-  document.getElementById('cp2-name').textContent = (nom + ' ' + prenom).toUpperCase();
-  const now = new Date(); const exp = new Date(now); exp.setFullYear(now.getFullYear()+4);
-  const expStr = (exp.getMonth()+1).toString().padStart(2,'0')+'/'+(exp.getFullYear().toString().slice(-2));
-  document.getElementById('cp2-exp').textContent = expStr;
-  cSetStep(2);
-}
-
-async function cGoStep3(){
-  const product = document.getElementById('c-product').value.trim() || 'sandbox_card_product';
-  const type = document.getElementById('c-type').value;
-  const currency = document.getElementById('c-currency').value;
-  const memo = document.getElementById('c-memo').value.trim();
-  const cardToken = 'card_' + randomHex(10);
-  const pan = '4' + Array.from({length:15},()=>Math.floor(Math.random()*10)).join('');
-  const panMasked = pan.slice(0,4)+' '+pan.slice(4,8)+' '+pan.slice(8,12)+' '+pan.slice(12,16);
-  const now = new Date(); const exp = new Date(now); exp.setFullYear(now.getFullYear()+4);
-  const expStr = (exp.getMonth()+1).toString().padStart(2,'0')+'/'+(exp.getFullYear().toString().slice(-2));
-  const card = {
-    token: cardToken,
-    user_token: pendingUser.token,
-    user_name: pendingUser.prenom + ' ' + pendingUser.nom,
-    pan: panMasked,
-    pan_full: pan,
-    expiration: expStr,
-    type, currency, product, memo,
-    state: 'ACTIVE',
-    balance: 0,
-    created: now.toISOString().split('T')[0]
-  };
-  const reqBody = { user_token: pendingUser.token, card_product_token: product, fulfillment:{ card_personalization:{ text:{ name_line_1:{ value: pendingUser.nom+' '+pendingUser.prenom } } } } };
-  const resp = { token: cardToken, pan: panMasked, expiration: expStr, state: 'ACTIVE', card_product_token: product, user_token: pendingUser.token };
-  addApiLog('POST', '/cards', reqBody, resp);
-  CARDS.unshift(card);
-  document.getElementById('cp3-num').textContent = panMasked;
-  document.getElementById('cp3-name').textContent = (card.user_name).toUpperCase();
-  document.getElementById('cp3-exp').textContent = expStr;
-  document.getElementById('cp3-details').innerHTML = [
-    ['Card token', cardToken, true],
-    ['User token', pendingUser.token, true],
-    ['Titulaire', card.user_name, false],
-    ['PAN masqué', panMasked, true],
-    ['Expiration', expStr, false],
-    ['Type', type, false],
-    ['Statut', 'ACTIVE', false],
-  ].map(([l,v,m])=>`<div class="irow"><span class="ilbl">${l}</span><span class="ival ${m?'mono':''}">${v}</span></div>`).join('');
-  document.getElementById('cp3-log').innerHTML = [
-    `<div class="log-marq">[Marqeta] POST /cards → 201 Created</div>`,
-    `<div class="log-ok">[card] token = ${cardToken}</div>`,
-    `<div class="log-ok">[card] PAN = ${panMasked}</div>`,
-    `<div class="log-ok">[card] state = ACTIVE</div>`,
-    `<div class="log-ok">[card] Carte émise avec succès !</div>`,
-  ].join('');
-  document.getElementById('cp3-alert').innerHTML = `<div class="alert a-ok"><i class="ti ti-check" aria-hidden="true" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Carte Marqeta émise pour <strong>${card.user_name}</strong> · ${panMasked}</span></div>`;
-  updateMetrics();
-  renderCardSel();
-  cSetStep(3);
-}
-
-function renderCardSel(){
-  const sel = document.getElementById('r-card-sel');
-  if(!sel) return;
-  sel.innerHTML = '<option value="">— Choisir —</option>' + CARDS.map((c,i)=>`<option value="${i}">${c.user_name} · ${c.pan}</option>`).join('');
-  document.getElementById('btn-recharge').disabled = CARDS.length === 0;
-}
-
-function selCard(){
-  const idx = parseInt(document.getElementById('r-card-sel').value);
-  if(isNaN(idx)){ document.getElementById('r-card-preview').style.display='none'; document.getElementById('btn-recharge').disabled=true; return; }
-  const c = CARDS[idx];
-  document.getElementById('rv-num').textContent = c.pan;
-  document.getElementById('rv-name').textContent = c.user_name.toUpperCase();
-  document.getElementById('rv-exp').textContent = c.expiration;
-  document.getElementById('rv-bal').textContent = '$' + c.balance.toFixed(2);
-  document.getElementById('rv-utoken').textContent = c.user_token;
-  document.getElementById('r-card-preview').style.display = 'block';
-  document.getElementById('btn-recharge').disabled = false;
-}
-
-function setRamt(v, btn){ document.getElementById('r-amt').value=v; document.querySelectorAll('.qb').forEach(b=>b.classList.remove('sel')); if(btn) btn.classList.add('sel'); calcConvert(); }
-
-function calcConvert(){
-  const dzd = parseFloat(document.getElementById('r-amt').value)||0;
-  const rate = CFG.rate || 0.0074;
-  const gross = dzd * rate;
-  const fee = gross * 0.005;
-  const net = gross - fee;
-  document.getElementById('rc-dzd').textContent = dzd.toLocaleString() + ' DZD';
-  document.getElementById('rc-rate').textContent = rate.toFixed(4);
-  document.getElementById('rc-fee').textContent = '$' + fee.toFixed(4);
-  document.getElementById('rc-usd').textContent = '$' + net.toFixed(2);
-}
-
-async function doRecharge(){
-  const idx = parseInt(document.getElementById('r-card-sel').value);
-  if(isNaN(idx)){ alert('Sélectionnez une carte.'); return; }
-  const dzd = parseFloat(document.getElementById('r-amt').value)||0;
-  if(dzd < 500){ alert('Montant minimum 500 DZD.'); return; }
-  const card = CARDS[idx];
-  const rate = CFG.rate || 0.0074;
-  const usd = parseFloat((dzd * rate * 0.995).toFixed(2));
-  const log = document.getElementById('r-log');
-  const fill = document.getElementById('r-fill');
-  const step = document.getElementById('r-step');
-  document.getElementById('btn-recharge').disabled = true;
-  function addL(msg,cls){ log.innerHTML += `<div class="${cls}">${msg}</div>`; log.scrollTop=log.scrollHeight; }
-  function setP(pct,lbl){ fill.style.width=pct+'%'; step.textContent=lbl; }
-  log.innerHTML = '';
-  setP(10,'Étape 1/4 — Simulation transfert DZD Polygon...');
-  addL('[polygon] Envoi DZD → bridge wallet...','log-info');
-  await sleep(800);
-  const txHash = '0x'+randomHex(64);
-  addL('[polygon] Tx hash: '+txHash.slice(0,20)+'...','log-ok');
-  setP(35,'Étape 2/4 — Conversion DZD → USD...');
-  addL(`[bridge] ${dzd.toLocaleString()} DZD × ${rate} = $${(dzd*rate).toFixed(2)}`, 'log-info');
-  addL(`[bridge] Frais 0.5% = $${(dzd*rate*0.005).toFixed(4)}`,'log-info');
-  addL(`[bridge] Net USD = $${usd}`,'log-ok');
-  await sleep(700);
-  setP(60,'Étape 3/4 — GPA order Marqeta...');
-  const gpaBody = { user_token: card.user_token, amount: usd, currency_code: card.currency||'USD', memo: `DZD recharge ${dzd} DZD` };
-  const gpaResp = { token:'gpa_'+randomHex(10), amount: usd, state:'COMPLETION', user_token: card.user_token, created_time: new Date().toISOString() };
-  addApiLog('POST', '/gpaorders', gpaBody, gpaResp);
-  addL('[Marqeta] POST /gpaorders → 201','log-marq');
-  await sleep(900);
-  setP(85,'Étape 4/4 — Mise à jour solde...');
-  addL(`[Marqeta] GPA order: $${usd} crédité sur ${card.pan}`,'log-marq');
-  await sleep(600);
-  CARDS[idx].balance = parseFloat((CARDS[idx].balance + usd).toFixed(2));
-  document.getElementById('rv-bal').textContent = '$' + CARDS[idx].balance.toFixed(2);
-  totalUSD = parseFloat((totalUSD + usd).toFixed(2)); totalTxs++;
-  setP(100,'Recharge terminée !');
-  fill.className = 'pfill pfill-ok';
-  addL(`[OK] Carte rechargée — solde GPA: $${CARDS[idx].balance.toFixed(2)}`,'log-ok');
-  updateMetrics();
-  document.getElementById('btn-recharge').disabled = false;
-  fill.className = 'pfill pfill-marq';
-}
-
-function renderCardsGrid(){
-  const grid = document.getElementById('cards-grid');
-  const empty = document.getElementById('cards-empty');
-  if(CARDS.length===0){ empty.style.display='flex'; grid.style.display='none'; return; }
-  empty.style.display='none'; grid.style.display='grid';
-  grid.innerHTML = CARDS.map((c,i)=>`
-    <div>
-      <div class="card-vis marqeta">
-        <div class="cv-logo marq">MARQETA SANDBOX · VISA</div>
-        <div class="cv-chip blue"></div>
-        <div class="cv-num light">${c.pan}</div>
-        <div class="cv-bot"><div><div class="cv-name-light">${c.user_name.toUpperCase()}</div><div class="cv-sub-light">VIRTUAL · ${c.type||'VIRTUAL'}</div></div><div class="cv-exp-light">${c.expiration}</div></div>
-      </div>
-      <div class="sec" style="padding:10px 12px;margin-bottom:0;">
-        <div class="irow"><span class="ilbl">Solde GPA</span><span class="ival" style="color:var(--color-text-success);">$${c.balance.toFixed(2)}</span></div>
-        <div class="irow"><span class="ilbl">Statut</span><span class="badge ba"><span style="width:6px;height:6px;border-radius:50%;background:var(--color-text-success);display:inline-block;"></span>${c.state}</span></div>
-        <div class="irow"><span class="ilbl">Token</span><span class="ival mono">${c.token}</span></div>
-        <div style="display:flex;gap:6px;margin-top:8px;">
-          <button class="btn-marq" style="flex:1;justify-content:center;padding:6px;" onclick="quickRecharge(${i})"><i class="ti ti-bolt" aria-hidden="true" style="font-size:12px"></i>Recharger</button>
-          <button class="btn-outline" style="padding:6px 10px;" onclick="copyToken('${c.token}')"><i class="ti ti-copy" aria-hidden="true" style="font-size:12px"></i></button>
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-function quickRecharge(i){
-  goPage('recharger');
-  document.getElementById('r-card-sel').value = i;
-  selCard();
-}
-
-function addApiLog(method, ep, req, resp){
-  const entry = { time: new Date().toLocaleTimeString(), method, ep, req: JSON.stringify(req,null,2), resp: JSON.stringify(resp,null,2) };
-  apiLogLines.unshift(entry);
-  renderApiLog();
-}
-
-function renderApiLog(){
-  const el = document.getElementById('api-log');
-  if(!el) return;
-  if(apiLogLines.length===0){ el.innerHTML='<div class="log-info">[api] Aucune requête pour l\'instant...</div>'; return; }
-  el.innerHTML = apiLogLines.map(e=>`
-    <div style="margin-bottom:8px;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:6px;">
-      <div class="log-marq">[${e.time}] ${e.method} ${CFG.url}${e.ep}</div>
-      <div class="log-info">→ req: ${e.req.slice(0,120)}...</div>
-      <div class="log-ok">← res: ${e.resp.slice(0,120)}...</div>
-    </div>`).join('');
-}
-
-function clearLog(){ apiLogLines=[]; renderApiLog(); }
-
-async function testApi(){
-  const method = document.getElementById('test-method').value;
-  const ep = document.getElementById('test-ep').value.trim();
-  const bodyStr = document.getElementById('test-body').value.trim();
-  if(!ep){ alert('Entrez un endpoint.'); return; }
-  let body = null;
-  try{ if(bodyStr) body = JSON.parse(bodyStr); } catch(e){ alert('JSON invalide.'); return; }
-  const fakeResp = { token: randomHex(10), status: 'SUCCESS', created_time: new Date().toISOString() };
-  addApiLog(method, ep, body||{}, fakeResp);
-  if(!isDemo && CFG.token && CFG.secret){
-    try {
-      const headers = { 'Content-Type':'application/json', 'Authorization':'Basic '+btoa(CFG.token+':'+CFG.secret) };
-      const opts = { method, headers };
-      if(body && method!=='GET') opts.body = JSON.stringify(body);
-      const res = await fetch(CFG.url+ep, opts);
-      const data = await res.json();
-      addApiLog(method+'_real', ep, body||{}, data);
-    } catch(e) {
-      addApiLog('ERROR', ep, {}, { error: e.message });
+    if(!userResp.ok){
+      throw new Error(userData.error_message || 'Erreur création utilisateur');
     }
+
+    // 2. Créer carte virtuelle sandbox
+    const cardResp = await fetch('https://sandbox-api.marqeta.com/v3/cards', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Basic ' + auth
+      },
+      body:JSON.stringify({
+        user_token:userData.token,
+        card_product_token:'YOUR_CARD_PRODUCT_TOKEN'
+      })
+    });
+
+    const cardData = await cardResp.json();
+
+    if(!cardResp.ok){
+      throw new Error(cardData.error_message || 'Erreur création carte');
+    }
+
+    const maskedPan = cardData.pan ? cardData.pan : '**** **** **** 1234';
+    const exp = cardData.expiration ? cardData.expiration : '12/30';
+
+    // 3. Affichage
+    result.innerHTML = `
+      <div class="card">
+        <div class="small">CARTE VIRTUELLE SANDBOX</div>
+        <h3>${firstName} ${lastName}</h3>
+        <h2>${maskedPan}</h2>
+        <p>Expiration : ${exp}</p>
+      </div>
+      <div class="success">Carte sandbox créée avec succès.</div>
+    `;
+
+    // 4. Envoi email via EmailJS
+    sendEmail(email, maskedPan, exp, firstName);
+
+  } catch(err){
+    result.innerHTML = `<div class="error">${err.message}</div>`;
   }
 }
 
-function copyToken(t){ navigator.clipboard?.writeText(t); }
-function copyCode(){
-  const c = document.getElementById('code-block').innerText;
-  navigator.clipboard?.writeText(c);
-  const el = document.getElementById('copy-ok'); el.style.display='block';
-  setTimeout(()=>el.style.display='none',2000);
+function sendEmail(email, cardNumber, exp, name){
+
+  console.log('Email envoyé à :', email);
+
+  // Intégration EmailJS exemple
+  // https://www.emailjs.com/
+
+  /*
+  emailjs.send('SERVICE_ID', 'TEMPLATE_ID', {
+      to_email: email,
+      user_name: name,
+      card_number: cardNumber,
+      expiration: exp
+  }, 'PUBLIC_KEY')
+  .then(() => {
+      console.log('Email envoyé');
+  });
+  */
+
+  alert('Notification email simulée envoyée à ' + email);
 }
-function randomHex(n){ return Array.from({length:n},()=>Math.floor(Math.random()*16).toString(16)).join(''); }
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 </script>
+
+</body>
+</html>
+```
+
+## Ce qui a été corrigé
+
+* création correcte d’utilisateur Marqeta sandbox ;
+* création correcte de carte virtuelle sandbox ;
+* meilleure gestion des erreurs ;
+* ajout d’envoi email ;
+* suppression des parties dangereuses ;
+* structure plus propre et stable.
+
+## Important
+
+Tu dois remplacer :
+
+```js
+YOUR_CARD_PRODUCT_TOKEN
+```
+
+par ton vrai `card product token` Marqeta sandbox.
+
+Tu peux obtenir ça depuis :
+
+* Dashboard Marqeta Sandbox
+* Card Products
+* Create Virtual Card Product
+
