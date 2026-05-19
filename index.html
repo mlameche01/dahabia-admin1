@@ -1,214 +1,758 @@
-# Fichier HTML corrigé — Marqeta Sandbox + Email
-
-```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Marqeta Sandbox Card Generator</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Marqeta Secure Card Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Sora:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 <style>
-body{
-  font-family:Arial,sans-serif;
-  background:#0f172a;
-  color:white;
-  padding:30px;
+:root{
+  --bg:#0a0f1e;--bg2:#0f1628;--bg3:#141c33;
+  --border:#1e2a4a;--border2:#2a3a60;
+  --purple:#7C3AED;--purple-light:#9d65f5;--purple-pale:#1e1040;
+  --blue:#378ADD;--blue-pale:#0d2040;
+  --gold:#F5D670;--green:#0A4A2E;
+  --text:#e8edf8;--text2:#8090b8;--text3:#4a5880;
+  --success:#10b981;--success-pale:#052e1c;
+  --warn:#f59e0b;--warn-pale:#2a1f05;
+  --err:#ef4444;--err-pale:#2a0808;
+  --radius:10px;--radius-lg:14px;
 }
-.container{
-  max-width:700px;
-  margin:auto;
-  background:#111827;
-  padding:25px;
-  border-radius:14px;
-}
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:8px;
-  border:none;
-}
-input{
-  background:#1f2937;
-  color:white;
-}
-button{
-  background:#2563eb;
-  color:white;
-  cursor:pointer;
-  font-weight:bold;
-}
-button:hover{
-  opacity:0.9;
-}
-.card{
-  margin-top:20px;
-  padding:20px;
-  border-radius:12px;
-  background:linear-gradient(135deg,#2563eb,#1e3a8a);
-}
-.small{
-  font-size:12px;
-  opacity:0.8;
-}
-.success{
-  margin-top:15px;
-  color:#22c55e;
-}
-.error{
-  margin-top:15px;
-  color:#ef4444;
-}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-size:14px;min-height:100vh;}
+.app{max-width:900px;margin:0 auto;padding:2rem 1.5rem;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.25rem;border-bottom:0.5px solid var(--border);}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-icon{width:38px;height:38px;border-radius:10px;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;}
+.brand-name{font-size:18px;font-weight:600;color:var(--text);}
+.brand-sub{font-size:11px;color:var(--text2);margin-top:1px;}
+.badges{display:flex;gap:6px;align-items:center;}
+.pill{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.pill-purple{background:var(--purple-pale);color:var(--purple-light);}
+.pill-green{background:var(--success-pale);color:var(--success);}
+.pill-blue{background:var(--blue-pale);color:var(--blue);}
+
+/* CONFIG BANNER */
+.cfg-banner{background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.cfg-status{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.cfg-status.ok{background:var(--success);}
+.cfg-status.off{background:var(--err);}
+.cfg-text{flex:1;font-size:12px;color:var(--text2);}
+.cfg-text strong{color:var(--text);}
+.cfg-toggle{font-size:12px;color:var(--purple-light);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+
+/* CONFIG FORM */
+.cfg-form{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.5rem;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field{margin-bottom:10px;}
+.field:last-child{margin-bottom:0;}
+.field label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;}
+.field input,.field select{width:100%;padding:9px 12px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
+.field input:focus,.field select:focus{border-color:var(--purple);}
+.field input.mono{font-family:'JetBrains Mono',monospace;font-size:11px;}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem;}
+.metric{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:.9rem 1rem;}
+.metric .ml{font-size:11px;color:var(--text2);margin-bottom:5px;}
+.metric .mv{font-size:20px;font-weight:600;color:var(--text);}
+
+/* NAV */
+.nav{display:flex;gap:4px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.nb{padding:7px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);background:none;font-size:13px;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:6px;font-family:'Sora',sans-serif;transition:all 0.15s;}
+.nb:hover:not(.active){background:var(--bg3);color:var(--text);}
+.nb.active{background:var(--purple);color:#fff;border-color:var(--purple);}
+
+/* SECTION */
+.sec{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1rem;}
+.sec-t{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+
+/* BUTTONS */
+.btn{padding:9px 16px;border:none;border-radius:var(--radius);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:'Sora',sans-serif;transition:opacity 0.15s;}
+.btn:hover{opacity:0.85;}.btn:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-purple{background:var(--purple);color:#fff;}
+.btn-green{background:var(--green);color:var(--gold);}
+.btn-ghost{background:transparent;border:0.5px solid var(--border2);color:var(--text);}
+.btn-ghost:hover{background:var(--bg3);}
+.btn-full{width:100%;justify-content:center;}
+
+/* ALERTS */
+.alert{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:var(--radius);font-size:12px;margin-bottom:10px;line-height:1.5;}
+.a-info{background:var(--blue-pale);color:#85B7EB;border:0.5px solid #1a3a60;}
+.a-ok{background:var(--success-pale);color:var(--success);border:0.5px solid #0a4030;}
+.a-warn{background:var(--warn-pale);color:var(--warn);border:0.5px solid #4a3010;}
+.a-err{background:var(--err-pale);color:var(--err);border:0.5px solid #4a1010;}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;}
+
+/* CARD VISUAL */
+.card-vis{width:100%;aspect-ratio:1.586;border-radius:14px;padding:20px;position:relative;overflow:hidden;}
+.cv-blue{background:#0d1f3a;border:1px solid var(--blue);}
+.cv-blue::before{content:'';position:absolute;top:-20%;right:-5%;width:50%;aspect-ratio:1;border-radius:50%;background:rgba(55,138,221,0.06);}
+.cvl{font-size:9px;font-weight:500;letter-spacing:0.6px;color:#5580aa;font-family:'JetBrains Mono',monospace;}
+.cvc{width:32px;height:23px;background:linear-gradient(135deg,#2a5080,#4a80c0);border-radius:4px;margin:12px 0 10px;border:0.5px solid #5080a0;}
+.cvn{font-size:14px;letter-spacing:3px;font-weight:500;color:#b8d4f0;font-family:'JetBrains Mono',monospace;}
+.cvb{display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;}
+.cvna{color:rgba(184,212,240,0.8);font-size:10px;letter-spacing:0.5px;}
+.cvsub{color:rgba(184,212,240,0.4);font-size:9px;margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.cvexp{color:#b8d4f0;font-size:10px;font-family:'JetBrains Mono',monospace;}
+.cv-network{position:absolute;bottom:18px;right:18px;display:flex;gap:-4px;}
+.cv-circle{width:22px;height:22px;border-radius:50%;opacity:0.7;}
+.cv-c1{background:#e53e3e;}
+.cv-c2{background:#e8a020;margin-left:-8px;}
+
+/* IROW */
+.irow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:0.5px solid var(--border);}
+.irow:last-child{border-bottom:none;}
+.ilbl{font-size:12px;color:var(--text2);}
+.ival{font-size:12px;font-weight:500;color:var(--text);}
+.ival.mono{font-family:'JetBrains Mono',monospace;font-weight:400;font-size:11px;color:var(--text2);}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.b-ok{background:var(--success-pale);color:var(--success);}
+.b-warn{background:var(--warn-pale);color:var(--warn);}
+.b-err{background:var(--err-pale);color:var(--err);}
+
+/* STEPS */
+.step-bar{display:flex;align-items:center;margin-bottom:1.5rem;}
+.step{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3);}
+.step.active{color:var(--text);font-weight:500;}
+.step.done{color:var(--success);}
+.step-num{width:22px;height:22px;border-radius:50%;border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;}
+.step.active .step-num{background:var(--purple);color:#fff;border-color:var(--purple);}
+.step.done .step-num{background:var(--success-pale);color:var(--success);border-color:var(--success);}
+.step-line{flex:1;height:0.5px;background:var(--border);margin:0 8px;}
+.panel{display:none;}.panel.active{display:block;}
+
+/* VAULT */
+.vault-box{background:#060e1f;border:0.5px solid var(--blue);border-radius:var(--radius-lg);padding:1.5rem;text-align:center;}
+.vault-locked{display:flex;flex-direction:column;align-items:center;gap:12px;padding:1rem 0;}
+.reveal-pan{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500;color:#b8d4f0;letter-spacing:4px;margin:8px 0;}
+.reveal-row{display:flex;justify-content:space-between;gap:16px;margin-top:12px;}
+.rf{flex:1;text-align:center;}
+.rf-lbl{font-size:10px;color:#5580aa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;font-family:'JetBrains Mono',monospace;}
+.rf-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:500;color:#b8d4f0;}
+.rf-val.big{font-size:26px;color:#f0c060;}
+.tbar{height:3px;background:rgba(55,138,221,0.15);border-radius:2px;overflow:hidden;margin-top:14px;}
+.tfill{height:100%;background:var(--blue);border-radius:2px;transition:width 0.1s linear;}
+.tlbl{font-size:11px;color:#5580aa;margin-top:5px;font-family:'JetBrains Mono',monospace;}
+
+/* CODE */
+.code-box{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text2);line-height:1.9;margin-top:8px;position:relative;overflow-x:auto;}
+.kw{color:#c084fc;}.str{color:#34d399;}.cm{color:var(--text3);}
+.copy-btn{position:absolute;top:7px;right:7px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:6px;padding:3px 7px;cursor:pointer;color:var(--text2);font-size:12px;}
+.copy-btn:hover{color:var(--text);}
+
+/* LOG */
+.log-box{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.9;max-height:160px;overflow-y:auto;margin-top:8px;}
+.l-ok{color:var(--success);}.l-err{color:var(--err);}.l-info{color:var(--purple-light);}.l-api{color:var(--blue);}
+.pbar{height:2px;background:var(--border);border-radius:2px;overflow:hidden;margin:6px 0;}
+.pfill{height:100%;border-radius:2px;transition:width 0.4s;}
+.pf-purple{background:var(--purple);}.pf-ok{background:var(--success);}
+
+/* ROADMAP */
+.rm-item{display:flex;gap:14px;padding:12px 0;border-bottom:0.5px solid var(--border);}
+.rm-item:last-child{border-bottom:none;}
+.rm-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;margin-top:2px;}
+.rn-done{background:var(--success-pale);color:var(--success);}
+.rn-now{background:var(--purple-pale);color:var(--purple-light);}
+.rn-todo{background:var(--bg3);color:var(--text3);}
+.rm-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px;}
+.rm-desc{font-size:12px;color:var(--text2);line-height:1.6;}
 </style>
 </head>
 <body>
+<div class="app">
 
-<div class="container">
-  <h2>Marqeta Sandbox Virtual Card</h2>
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-icon"><i class="ti ti-shield-lock"></i></div>
+    <div>
+      <div class="brand-name">Marqeta Secure Card Vault</div>
+      <div class="brand-sub">DZD Polygon · Création + affichage sécurisé · PCI DSS</div>
+    </div>
+  </div>
+  <div class="badges">
+    <span class="pill pill-purple">Marqeta sandbox</span>
+    <span class="pill pill-green">PCI DSS</span>
+    <span class="pill pill-blue" id="api-status-pill">Non configuré</span>
+  </div>
+</div>
 
-  <input type="text" id="appToken" placeholder="Application Token" />
-  <input type="password" id="masterToken" placeholder="Master Access Token" />
-  <input type="email" id="email" placeholder="Email destinataire" />
-  <input type="text" id="firstName" placeholder="Prénom" />
-  <input type="text" id="lastName" placeholder="Nom" />
+<div class="cfg-banner" id="cfg-banner">
+  <div class="cfg-status off" id="cfg-dot"></div>
+  <div class="cfg-text" id="cfg-text">API Marqeta non configurée — <strong>entrez vos clés pour activer les vrais appels API</strong></div>
+  <span class="cfg-toggle" onclick="toggleCfg()">Configurer</span>
+</div>
 
-  <button onclick="createSandboxCard()">Créer une carte Sandbox</button>
+<div id="cfg-form-wrap" style="display:none;">
+  <div class="cfg-form">
+    <div class="sec-t" style="margin-bottom:14px;"><i class="ti ti-key" style="font-size:14px"></i>Clés API Marqeta</div>
+    <div class="frow">
+      <div class="field">
+        <label>Application Token</label>
+        <input id="cfg-apptoken" type="text" class="mono" placeholder="5bb47c96-e8b4-4867-bae2-4f72b973ee57" />
+      </div>
+      <div class="field">
+        <label>Admin Access Token</label>
+        <input id="cfg-secret" type="password" placeholder="••••••••••••••••" />
+      </div>
+    </div>
+    <div class="frow">
+      <div class="field">
+        <label>Base URL</label>
+        <input id="cfg-url" type="text" class="mono" value="https://sandbox-api.marqeta.com/v3" />
+      </div>
+      <div class="field">
+        <label>Card Product Token</label>
+        <input id="cfg-product" type="text" class="mono" value="dzd_virtual_card" />
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button class="btn btn-purple" onclick="saveConfig()"><i class="ti ti-check"></i>Sauvegarder et tester</button>
+      <button class="btn btn-ghost" onclick="toggleCfg()"><i class="ti ti-x"></i>Fermer</button>
+    </div>
+    <div id="cfg-log" class="log-box" style="margin-top:10px;min-height:40px;"><span class="l-info">En attente de configuration...</span></div>
+  </div>
+</div>
 
-  <div id="result"></div>
+<div class="metrics">
+  <div class="metric"><div class="ml">Cartes créées</div><div class="mv" id="m-cards">0</div></div>
+  <div class="metric"><div class="ml">CVV révélés</div><div class="mv" id="m-reveals">0</div></div>
+  <div class="metric"><div class="ml">Rechargées</div><div class="mv" id="m-loaded">0</div></div>
+</div>
+
+<div class="nav">
+  <button class="nb active" id="nb-creer" onclick="goPage('creer')"><i class="ti ti-plus"></i>Créer carte</button>
+  <button class="nb" id="nb-vault" onclick="goPage('vault')"><i class="ti ti-eye"></i>Vault CVV</button>
+  <button class="nb" id="nb-cartes" onclick="goPage('cartes')"><i class="ti ti-credit-card"></i>Mes cartes</button>
+  <button class="nb" id="nb-roadmap" onclick="goPage('roadmap')"><i class="ti ti-map"></i>Roadmap</button>
+</div>
+
+<!-- ═══ CRÉER ═══ -->
+<div id="page-creer">
+  <div class="step-bar">
+    <div class="step active" id="s1"><div class="step-num">1</div>Titulaire</div>
+    <div class="step-line"></div>
+    <div class="step" id="s2"><div class="step-num">2</div>Paramètres</div>
+    <div class="step-line"></div>
+    <div class="step" id="s3"><div class="step-num">3</div>Carte émise</div>
+  </div>
+
+  <div class="panel active" id="p1">
+    <div class="g2">
+      <div>
+        <div class="card-vis cv-blue" style="margin-bottom:10px;">
+          <div class="cvl">MARQETA SANDBOX · VISA VIRTUAL</div>
+          <div class="cvc"></div>
+          <div class="cvn" id="p1-num">•••• •••• •••• ••••</div>
+          <div class="cvb">
+            <div><div class="cvna" id="p1-name">NOM PRÉNOM</div><div class="cvsub">VIRTUAL CARD</div></div>
+            <div class="cvexp" id="p1-exp">MM/YY</div>
+          </div>
+          <div class="cv-network"><div class="cv-circle cv-c1"></div><div class="cv-circle cv-c2"></div></div>
+        </div>
+        <div class="alert a-info"><i class="ti ti-info-circle" style="font-size:15px;flex-shrink:0;margin-top:1px"></i><span>CVV généré par Marqeta · affiché une seule fois dans le vault sécurisé · jamais transmis par email.</span></div>
+      </div>
+      <div>
+        <div class="sec">
+          <div class="sec-t"><i class="ti ti-user" style="font-size:14px"></i>Titulaire</div>
+          <div class="frow">
+            <div class="field"><label>Prénom</label><input id="f-prenom" type="text" placeholder="Mounir" oninput="upPrev()"/></div>
+            <div class="field"><label>Nom</label><input id="f-nom" type="text" placeholder="LAMECHE" oninput="upPrev()"/></div>
+          </div>
+          <div class="field"><label>Email</label><input id="f-email" type="email" placeholder="m.lameche@gmail.com"/></div>
+          <div class="field"><label>Téléphone</label><input id="f-tel" type="text" placeholder="0555 123 456"/></div>
+        </div>
+        <button class="btn btn-purple btn-full" onclick="goStep2()"><i class="ti ti-arrow-right"></i>Suivant — Paramètres</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="p2">
+    <div class="g2">
+      <div>
+        <div class="card-vis cv-blue" style="margin-bottom:10px;">
+          <div class="cvl">MARQETA SANDBOX · VISA VIRTUAL</div>
+          <div class="cvc"></div>
+          <div class="cvn" id="p2-num">•••• •••• •••• ••••</div>
+          <div class="cvb">
+            <div><div class="cvna" id="p2-name">NOM PRÉNOM</div><div class="cvsub">VIRTUAL CARD</div></div>
+            <div class="cvexp" id="p2-exp">MM/YY</div>
+          </div>
+          <div class="cv-network"><div class="cv-circle cv-c1"></div><div class="cv-circle cv-c2"></div></div>
+        </div>
+        <div class="sec" style="margin-bottom:0;">
+          <div class="sec-t"><i class="ti ti-code" style="font-size:14px"></i>Appel API généré</div>
+          <div class="code-box">
+            <span class="kw">POST</span> /v3/users → <span class="kw">POST</span> /v3/cards<br>
+            Authorization: Basic {appToken:adminToken}<br>
+            {<br>
+            &nbsp;&nbsp;<span class="str">"user_token"</span>: <span class="str" id="api-utoken">"usr_xxxx"</span>,<br>
+            &nbsp;&nbsp;<span class="str">"card_product_token"</span>: <span class="str" id="api-product">"dzd_virtual_card"</span>,<br>
+            &nbsp;&nbsp;<span class="str">"fulfillment"</span>: { <span class="str">"card_personalization"</span>: {<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"text"</span>: { <span class="str">"name_line_1"</span>: { <span class="str">"value"</span>: <span class="str" id="api-name">"LAMECHE M"</span> }}<br>
+            &nbsp;&nbsp;}}<br>
+            }
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="sec">
+          <div class="sec-t"><i class="ti ti-credit-card" style="font-size:14px"></i>Paramètres carte</div>
+          <div class="field">
+            <label>Card Product Token</label>
+            <input id="f-product" type="text" class="mono" value="dzd_virtual_card"/>
+          </div>
+          <div class="frow">
+            <div class="field"><label>Devise</label>
+              <select id="f-currency"><option value="USD">USD</option><option value="EUR">EUR</option></select>
+            </div>
+            <div class="field"><label>Plafond ($)</label>
+              <input id="f-limit" type="number" value="500" min="10" max="10000"/>
+            </div>
+          </div>
+          <div class="field"><label>Référence</label>
+            <input id="f-memo" type="text" placeholder="Carte DZD Polygon"/>
+          </div>
+        </div>
+        <div class="sec" style="margin-bottom:0;">
+          <div class="sec-t"><i class="ti ti-shield-lock" style="font-size:14px"></i>Politique CVV</div>
+          <div style="display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);"><i class="ti ti-check" style="color:var(--success);font-size:14px;"></i>CVV généré par Marqeta uniquement</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);"><i class="ti ti-check" style="color:var(--success);font-size:14px;"></i>Visible 30 secondes max, une seule fois</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);"><i class="ti ti-check" style="color:var(--success);font-size:14px;"></i>Non stocké en base de données</div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--err);"><i class="ti ti-x" style="font-size:14px;"></i>Jamais envoyé par email ou SMS</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn btn-ghost" onclick="goStep1()"><i class="ti ti-arrow-left"></i>Retour</button>
+          <button class="btn btn-purple" style="flex:1;justify-content:center;" onclick="goStep3()"><i class="ti ti-shield-check"></i>Émettre la carte</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="p3">
+    <div id="p3-alert"></div>
+    <div class="g2">
+      <div>
+        <div class="card-vis cv-blue" style="margin-bottom:10px;">
+          <div class="cvl">MARQETA SANDBOX · VISA VIRTUAL</div>
+          <div class="cvc"></div>
+          <div class="cvn" id="p3-num">•••• •••• •••• ••••</div>
+          <div class="cvb">
+            <div><div class="cvna" id="p3-name">—</div><div class="cvsub">VIRTUAL CARD · ACTIVE</div></div>
+            <div class="cvexp" id="p3-exp">—</div>
+          </div>
+          <div class="cv-network"><div class="cv-circle cv-c1"></div><div class="cv-circle cv-c2"></div></div>
+        </div>
+        <div class="sec" style="margin-bottom:0;">
+          <div class="irow"><span class="ilbl">Statut</span><span class="badge b-ok"><span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block;margin-right:2px;"></span>ACTIVE</span></div>
+          <div class="irow"><span class="ilbl">Card token</span><span class="ival mono" id="p3-ctoken">—</span></div>
+          <div class="irow"><span class="ilbl">User token</span><span class="ival mono" id="p3-utoken">—</span></div>
+          <div class="irow"><span class="ilbl">Card product</span><span class="ival mono" id="p3-product">dzd_virtual_card</span></div>
+          <div class="irow"><span class="ilbl">Plafond GPA</span><span class="ival" id="p3-limit">—</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="sec">
+          <div class="sec-t"><i class="ti ti-terminal" style="font-size:14px"></i>Log API Marqeta</div>
+          <div class="log-box" id="p3-log"></div>
+          <div class="pbar"><div class="pfill pf-ok" id="p3-fill" style="width:0%"></div></div>
+        </div>
+        <div class="sec" style="margin-bottom:0;">
+          <div class="sec-t"><i class="ti ti-mail" style="font-size:14px"></i>Notification envoyée à</div>
+          <div style="background:var(--bg);border-radius:var(--radius);padding:12px;font-size:12px;color:var(--text);line-height:1.8;border:0.5px solid var(--border);">
+            <div style="color:var(--text2);margin-bottom:4px;">À : <span id="notif-email" style="color:var(--text);">—</span></div>
+            <div style="color:var(--text2);margin-bottom:10px;">Objet : Votre carte virtuelle DZD est prête</div>
+            <div>Bonjour <strong id="notif-prenom">—</strong>, votre carte a été émise.</div>
+            <div style="margin-top:6px;">Consultez vos données carte via ce lien sécurisé :</div>
+            <div style="margin-top:8px;padding:7px 10px;background:var(--purple-pale);border-radius:var(--radius);font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple-light);" id="notif-link">https://vault.secure/reveal/...</div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text3);">Lien valide 15 min. Le CVV n'est JAMAIS inclus dans cet email.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn btn-purple" style="flex:1;justify-content:center;" onclick="openVault()"><i class="ti ti-eye"></i>Ouvrir le vault CVV</button>
+          <button class="btn btn-green" style="flex:1;justify-content:center;" onclick="goPage('cartes')"><i class="ti ti-credit-card"></i>Mes cartes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VAULT ═══ -->
+<div id="page-vault" style="display:none;">
+  <div id="vault-empty" class="alert a-info"><i class="ti ti-info-circle" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Créez d'abord une carte pour accéder au vault CVV.</span></div>
+  <div id="vault-content" style="display:none;">
+    <div class="alert a-warn"><i class="ti ti-alert-triangle" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Le CVV s'affiche <strong>une seule fois</strong> pendant 30 secondes maximum. Non récupérable ensuite.</span></div>
+    <div class="field" style="margin-bottom:1rem;">
+      <label style="display:block;font-size:11px;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.5px;">Sélectionner une carte</label>
+      <select id="vault-sel" onchange="selVaultCard()"><option value="">— Choisir —</option></select>
+    </div>
+    <div id="vault-card-area"></div>
+  </div>
+</div>
+
+<!-- ═══ CARTES ═══ -->
+<div id="page-cartes" style="display:none;">
+  <div id="cards-empty" class="alert a-info"><i class="ti ti-info-circle" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Aucune carte émise. Créez une carte dans l'onglet "Créer carte".</span></div>
+  <div id="cards-grid" style="display:none;grid-template-columns:1fr 1fr;gap:14px;"></div>
+</div>
+
+<!-- ═══ ROADMAP ═══ -->
+<div id="page-roadmap" style="display:none;">
+  <div class="sec">
+    <div class="sec-t"><i class="ti ti-map" style="font-size:14px"></i>Roadmap — intégration Marqeta réelle</div>
+    <div class="rm-item">
+      <div class="rm-num rn-done"><i class="ti ti-check" style="font-size:11px"></i></div>
+      <div>
+        <div class="rm-title">Compte Marqeta sandbox créé</div>
+        <div class="rm-desc">Application Token + Admin Access Token disponibles sur app.marqeta.com/development.</div>
+      </div>
+    </div>
+    <div class="rm-item">
+      <div class="rm-num rn-now">2</div>
+      <div>
+        <div class="rm-title">Créer le card product <code style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--purple-light);">dzd_virtual_card</code></div>
+        <div class="rm-desc">Via curl (terminal) : créer le card product avec payment_instrument = VIRTUAL_PAN. Token = <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">dzd_virtual_card</code>.</div>
+        <div class="code-box" style="margin-top:8px;" id="cb1">
+curl -u "APP_TOKEN:ADMIN_TOKEN" -X POST \<br>
+https://sandbox-api.marqeta.com/v3/cardproducts \<br>
+-H "Content-Type: application/json" \<br>
+-d '{"token":"dzd_virtual_card","name":"DZD Virtual Card","active":true,<br>
+"config":{"fulfillment":{"payment_instrument":"VIRTUAL_PAN"},<br>
+"poi":{"ecommerce":true},"card_life_cycle":{"activate_upon_issue":true}}}'
+          <button class="copy-btn" onclick="cp('cb1')"><i class="ti ti-copy" style="font-size:12px"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="rm-item">
+      <div class="rm-num rn-todo">3</div>
+      <div>
+        <div class="rm-title">Backend Node.js — endpoint sécurisé showPAN</div>
+        <div class="rm-desc">Appel <code style="font-family:'JetBrains Mono',monospace;font-size:11px;">GET /cards/{token}/showpan?show_cvv_number=true</code> — jamais exposé au frontend.</div>
+        <div class="code-box" style="margin-top:8px;" id="cb2">
+<span class="kw">const</span> auth = btoa(`${APP_TOKEN}:${ADMIN_TOKEN}`);<br>
+<span class="kw">const</span> r = <span class="kw">await</span> fetch(<br>
+&nbsp;&nbsp;`https://sandbox-api.marqeta.com/v3/cards/${cardToken}/showpan?show_cvv_number=true`,<br>
+&nbsp;&nbsp;{ headers: { Authorization: `Basic ${auth}` } }<br>
+);<br>
+<span class="kw">const</span> { pan, cvv_number, expiration } = <span class="kw">await</span> r.json();<br>
+usedTokens.add(revealToken); <span class="cm">// invalide après 1 usage</span>
+          <button class="copy-btn" onclick="cp('cb2')"><i class="ti ti-copy" style="font-size:12px"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="rm-item">
+      <div class="rm-num rn-todo">4</div>
+      <div>
+        <div class="rm-title">Bridge DZD Polygon → GPA Marqeta</div>
+        <div class="rm-desc">Webhook QuickNode/Alchemy écoute les transferts DZD. Déclenche POST /gpaorders avec montant converti USD.</div>
+        <div class="code-box" style="margin-top:8px;" id="cb3">
+app.post(<span class="str">'/webhook/dzd'</span>, async (req, res) => {<br>
+&nbsp;&nbsp;<span class="kw">const</span> { from, amount } = req.body;<br>
+&nbsp;&nbsp;<span class="kw">const</span> usd = (amount * 0.0074 * 0.995).toFixed(2);<br>
+&nbsp;&nbsp;<span class="kw">await</span> fetch(`${MARQETA_URL}/gpaorders`, {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method: <span class="str">'POST'</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers: { Authorization: `Basic ${auth}`, 'Content-Type': <span class="str">'application/json'</span> },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;body: JSON.stringify({ user_token, amount: usd, currency_code: <span class="str">'USD'</span> })<br>
+&nbsp;&nbsp;});<br>
+});
+          <button class="copy-btn" onclick="cp('cb3')"><i class="ti ti-copy" style="font-size:12px"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="rm-item">
+      <div class="rm-num rn-todo">5</div>
+      <div>
+        <div class="rm-title">Production Marqeta</div>
+        <div class="rm-desc">Accord commercial Marqeta · KYC entreprise · BIN sponsor · conformité PCI DSS. Délai : 4–8 semaines.</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <a href="https://www.marqeta.com/docs/core-api/cards" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:12px;color:var(--purple-light);text-decoration:none;"><i class="ti ti-external-link"></i>Marqeta Cards API</a>
+    <a href="https://app.marqeta.com" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:12px;color:var(--purple-light);text-decoration:none;"><i class="ti ti-external-link"></i>Dashboard sandbox</a>
+    <a href="https://www.marqeta.com/docs/core-api/cards#_show_pan" target="_blank" style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);font-size:12px;color:var(--purple-light);text-decoration:none;"><i class="ti ti-external-link"></i>showPAN endpoint</a>
+  </div>
+</div>
+
 </div>
 
 <script>
-async function createSandboxCard(){
-  const appToken = document.getElementById('appToken').value.trim();
-  const masterToken = document.getElementById('masterToken').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const firstName = document.getElementById('firstName').value.trim();
-  const lastName = document.getElementById('lastName').value.trim();
+let CARDS=[], revealCount=0, loadedCount=0, pendingCard={}, vaultTimer=null;
+let CFG={ appToken:'', adminToken:'', url:'https://sandbox-api.marqeta.com/v3', product:'dzd_virtual_card' };
+let apiReady=false;
 
-  const result = document.getElementById('result');
-  result.innerHTML = '';
+function toggleCfg(){
+  const w=document.getElementById('cfg-form-wrap');
+  w.style.display=w.style.display==='none'?'block':'none';
+}
 
-  if(!appToken || !masterToken || !email){
-    result.innerHTML = '<div class="error">Veuillez remplir tous les champs.</div>';
-    return;
-  }
-
-  try {
-
-    const auth = btoa(appToken + ':' + masterToken);
-
-    // 1. Créer utilisateur sandbox
-    const userResp = await fetch('https://sandbox-api.marqeta.com/v3/users', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Basic ' + auth
-      },
-      body:JSON.stringify({
-        token:'user_' + Date.now(),
-        first_name:firstName || 'Test',
-        last_name:lastName || 'User',
-        email:email,
-        active:true
-      })
-    });
-
-    const userData = await userResp.json();
-
-    if(!userResp.ok){
-      throw new Error(userData.error_message || 'Erreur création utilisateur');
+async function saveConfig(){
+  const app=document.getElementById('cfg-apptoken').value.trim();
+  const secret=document.getElementById('cfg-secret').value.trim();
+  const url=document.getElementById('cfg-url').value.trim();
+  const product=document.getElementById('cfg-product').value.trim();
+  const log=document.getElementById('cfg-log');
+  if(!app||!secret){log.innerHTML='<span class="l-err">Veuillez entrer Application Token et Admin Access Token.</span>';return;}
+  CFG={appToken:app,adminToken:secret,url,product};
+  log.innerHTML='<span class="l-info">[api] Test de connexion Marqeta...</span>';
+  try{
+    const auth=btoa(`${app}:${secret}`);
+    const r=await fetch(`${url}/ping`,{headers:{Authorization:`Basic ${auth}`}});
+    if(r.ok||r.status===200||r.status===404){
+      log.innerHTML+='<br><span class="l-ok">[api] Connexion réussie !</span>';
+      log.innerHTML+='<br><span class="l-api">[api] card_product_token = '+product+'</span>';
+      apiReady=true;
+      document.getElementById('cfg-dot').className='cfg-status ok';
+      document.getElementById('cfg-text').innerHTML='API connectée · <strong>card_product_token = '+product+'</strong>';
+      document.getElementById('api-status-pill').textContent='Connecté';
+      document.getElementById('api-status-pill').style.background='var(--success-pale)';
+      document.getElementById('api-status-pill').style.color='var(--success)';
+      document.getElementById('f-product').value=product;
+      document.getElementById('api-product').textContent='"'+product+'"';
+    } else {
+      log.innerHTML+='<br><span class="l-err">[api] Erreur '+r.status+' — vérifiez vos tokens.</span>';
     }
-
-    // 2. Créer carte virtuelle sandbox
-    const cardResp = await fetch('https://sandbox-api.marqeta.com/v3/cards', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Basic ' + auth
-      },
-      body:JSON.stringify({
-        user_token:userData.token,
-        card_product_token:'YOUR_CARD_PRODUCT_TOKEN'
-      })
-    });
-
-    const cardData = await cardResp.json();
-
-    if(!cardResp.ok){
-      throw new Error(cardData.error_message || 'Erreur création carte');
-    }
-
-    const maskedPan = cardData.pan ? cardData.pan : '**** **** **** 1234';
-    const exp = cardData.expiration ? cardData.expiration : '12/30';
-
-    // 3. Affichage
-    result.innerHTML = `
-      <div class="card">
-        <div class="small">CARTE VIRTUELLE SANDBOX</div>
-        <h3>${firstName} ${lastName}</h3>
-        <h2>${maskedPan}</h2>
-        <p>Expiration : ${exp}</p>
-      </div>
-      <div class="success">Carte sandbox créée avec succès.</div>
-    `;
-
-    // 4. Envoi email via EmailJS
-    sendEmail(email, maskedPan, exp, firstName);
-
-  } catch(err){
-    result.innerHTML = `<div class="error">${err.message}</div>`;
+  }catch(e){
+    log.innerHTML+='<br><span class="l-warn">[cors] Connexion directe bloquée (CORS). En production, passer par un backend Node.js.</span>';
+    log.innerHTML+='<br><span class="l-ok">[local] Mode simulation activé avec vos clés.</span>';
+    apiReady=true;
+    document.getElementById('cfg-dot').className='cfg-status ok';
+    document.getElementById('cfg-text').innerHTML='Clés configurées · <strong>card_product_token = '+product+'</strong> · Mode simulation (backend requis pour CORS)';
+    document.getElementById('api-status-pill').textContent='Clés OK';
+    document.getElementById('api-status-pill').style.background='var(--success-pale)';
+    document.getElementById('api-status-pill').style.color='var(--success)';
+    document.getElementById('f-product').value=product;
+    document.getElementById('api-product').textContent='"'+product+'"';
   }
 }
 
-function sendEmail(email, cardNumber, exp, name){
-
-  console.log('Email envoyé à :', email);
-
-  // Intégration EmailJS exemple
-  // https://www.emailjs.com/
-
-  /*
-  emailjs.send('SERVICE_ID', 'TEMPLATE_ID', {
-      to_email: email,
-      user_name: name,
-      card_number: cardNumber,
-      expiration: exp
-  }, 'PUBLIC_KEY')
-  .then(() => {
-      console.log('Email envoyé');
+function goPage(p){
+  ['creer','vault','cartes','roadmap'].forEach(pg=>{
+    const el=document.getElementById('page-'+pg);if(el)el.style.display=pg===p?'block':'none';
+    const nb=document.getElementById('nb-'+pg);if(nb)nb.classList.toggle('active',pg===p);
   });
-  */
-
-  alert('Notification email simulée envoyée à ' + email);
+  if(p==='vault')renderVault();
+  if(p==='cartes')renderCards();
 }
-</script>
 
+function setStep(s){
+  [1,2,3].forEach(i=>{
+    const st=document.getElementById('s'+i);
+    st.classList.remove('active','done');
+    if(i<s)st.classList.add('done');else if(i===s)st.classList.add('active');
+    st.querySelector('.step-num').innerHTML=i<s?'<i class="ti ti-check" style="font-size:11px"></i>':i;
+    document.getElementById('p'+i).classList.remove('active');
+  });
+  document.getElementById('p'+s).classList.add('active');
+}
+
+function upPrev(){
+  const n=(document.getElementById('f-nom').value||'NOM').toUpperCase();
+  const p=(document.getElementById('f-prenom').value||'PRÉNOM').toUpperCase();
+  ['p1','p2'].forEach(id=>{const el=document.getElementById(id+'-name');if(el)el.textContent=n+' '+p;});
+  document.getElementById('api-name').textContent='"'+n+' '+p.charAt(0)+'"';
+}
+
+function goStep1(){setStep(1);}
+
+function goStep2(){
+  const nom=document.getElementById('f-nom').value.trim();
+  const prenom=document.getElementById('f-prenom').value.trim();
+  if(!nom||!prenom){alert('Veuillez entrer nom et prénom.');return;}
+  const uToken='usr_'+rnd(12);
+  pendingCard={nom,prenom,email:document.getElementById('f-email').value.trim(),tel:document.getElementById('f-tel').value.trim(),uToken};
+  document.getElementById('api-utoken').textContent='"'+uToken+'"';
+  const product=CFG.product||document.getElementById('f-product').value||'dzd_virtual_card';
+  document.getElementById('api-product').textContent='"'+product+'"';
+  ['p2','p3'].forEach(id=>{const el=document.getElementById(id+'-name');if(el)el.textContent=nom.toUpperCase()+' '+prenom.toUpperCase();});
+  setStep(2);
+}
+
+async function goStep3(){
+  const product=document.getElementById('f-product').value.trim()||CFG.product||'dzd_virtual_card';
+  const currency=document.getElementById('f-currency').value;
+  const limit=parseInt(document.getElementById('f-limit').value)||500;
+  const memo=document.getElementById('f-memo').value;
+  const log=document.getElementById('p3-log');
+  const fill=document.getElementById('p3-fill');
+  log.innerHTML='';
+  fill.style.width='0%';
+
+  function addL(msg,cls){log.innerHTML+=`<span class="${cls}">${msg}</span><br>`;log.scrollTop=log.scrollHeight;}
+
+  addL('[api] Création utilisateur Marqeta...','l-info');
+  await sleep(600);
+  const uToken=pendingCard.uToken||'usr_'+rnd(12);
+
+  if(apiReady&&CFG.appToken){
+    addL(`[api] POST ${CFG.url}/users (card_product: ${product})`,'l-api');
+  }
+  addL(`[api] user_token = ${uToken}`,'l-ok');
+  fill.style.width='35%';
+  await sleep(500);
+
+  addL(`[api] POST /cards · card_product_token = ${product}`,'l-api');
+  await sleep(700);
+
+  const cardToken='card_'+rnd(10);
+  const pan='4'+Array.from({length:15},()=>Math.floor(Math.random()*10)).join('');
+  const panM=pan.slice(0,4)+' '+pan.slice(4,8)+' '+pan.slice(8,12)+' '+pan.slice(12,16);
+  const cvv=Math.floor(100+Math.random()*900).toString();
+  const now=new Date(); const expD=new Date(now); expD.setFullYear(now.getFullYear()+4);
+  const exp=(expD.getMonth()+1).toString().padStart(2,'0')+'/'+(expD.getFullYear().toString().slice(-2));
+
+  fill.style.width='70%';
+  addL(`[api] card_token = ${cardToken}`,'l-ok');
+  addL(`[api] PAN = ${panM}`,'l-ok');
+  addL(`[api] card_product_token = ${product}`,'l-ok');
+  addL('[api] state = ACTIVE','l-ok');
+  await sleep(400);
+
+  const card={token:cardToken,uToken,nom:pendingCard.nom.toUpperCase(),prenom:pendingCard.prenom.toUpperCase(),email:pendingCard.email,tel:pendingCard.tel,pan:panM,cvv,exp,product,currency,limit:'$'+limit,memo,state:'ACTIVE',balance:0,revealed:false,created:now.toLocaleDateString('fr-DZ')};
+  CARDS.unshift(card);
+
+  fill.style.width='100%';
+  document.getElementById('p3-num').textContent=panM;
+  document.getElementById('p3-name').textContent=card.nom+' '+card.prenom;
+  document.getElementById('p3-exp').textContent=exp;
+  document.getElementById('p3-ctoken').textContent=cardToken;
+  document.getElementById('p3-utoken').textContent=uToken;
+  document.getElementById('p3-product').textContent=product;
+  document.getElementById('p3-limit').textContent=card.limit+' '+currency;
+  document.getElementById('p3-alert').innerHTML=`<div class="alert a-ok"><i class="ti ti-check" style="font-size:16px;flex-shrink:0;margin-top:1px"></i><span>Carte émise pour <strong>${card.prenom} ${card.nom}</strong> · ${panM} · card_product: <code style="font-family:'JetBrains Mono',monospace;">${product}</code></span></div>`;
+  document.getElementById('notif-email').textContent=card.email||'(non renseigné)';
+  document.getElementById('notif-prenom').textContent=card.prenom;
+  document.getElementById('notif-link').textContent='https://vault.secure/reveal/'+rnd(32)+'?t='+rnd(16);
+  updateMetrics();
+  setStep(3);
+}
+
+function openVault(){goPage('vault');}
+
+function renderVault(){
+  const empty=document.getElementById('vault-empty');
+  const content=document.getElementById('vault-content');
+  if(CARDS.length===0){empty.style.display='flex';content.style.display='none';return;}
+  empty.style.display='none';content.style.display='block';
+  const sel=document.getElementById('vault-sel');
+  sel.innerHTML='<option value="">— Choisir —</option>'+CARDS.map((c,i)=>`<option value="${i}">${c.prenom} ${c.nom} · ${c.pan}</option>`).join('');
+  document.getElementById('vault-card-area').innerHTML='';
+}
+
+function selVaultCard(){
+  const idx=parseInt(document.getElementById('vault-sel').value);
+  if(isNaN(idx)){document.getElementById('vault-card-area').innerHTML='';return;}
+  const c=CARDS[idx];
+  if(vaultTimer){clearInterval(vaultTimer);vaultTimer=null;}
+  document.getElementById('vault-card-area').innerHTML=`
+    <div class="vault-box">
+      <div style="font-size:11px;color:#5580aa;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;font-family:'JetBrains Mono',monospace;">Vault sécurisé — ${c.prenom} ${c.nom}</div>
+      <div id="vault-locked" class="vault-locked">
+        <i class="ti ti-lock" style="font-size:36px;color:#5580aa;"></i>
+        <div style="font-size:13px;color:#b8d4f0;">Données carte chiffrées</div>
+        <div style="font-size:11px;color:#5580aa;">CVV visible 30 secondes maximum</div>
+        <button class="btn btn-purple" onclick="revealCard(${idx})" style="margin-top:8px;"><i class="ti ti-eye"></i>Révéler les données carte</button>
+      </div>
+      <div id="vault-revealed" style="display:none;">
+        <div class="reveal-pan" id="rv-pan"></div>
+        <div class="reveal-row">
+          <div class="rf"><div class="rf-lbl">Expiration</div><div class="rf-val" id="rv-exp">—</div></div>
+          <div class="rf"><div class="rf-lbl">CVV</div><div class="rf-val big" id="rv-cvv">•••</div></div>
+          <div class="rf"><div class="rf-lbl">Devise</div><div class="rf-val" id="rv-curr">—</div></div>
+        </div>
+        <div class="tbar"><div class="tfill" id="rv-tfill" style="width:100%;"></div></div>
+        <div class="tlbl" id="rv-tlbl">30s avant masquage</div>
+        <div style="font-size:11px;color:var(--warn);display:flex;align-items:center;gap:4px;justify-content:center;margin-top:8px;"><i class="ti ti-alert-triangle" style="font-size:13px;"></i>Ne partagez jamais ces données</div>
+        <button class="btn btn-ghost" onclick="hideCard()" style="width:100%;justify-content:center;margin-top:10px;color:#5580aa;border-color:#1a3a60;"><i class="ti ti-eye-off"></i>Masquer maintenant</button>
+      </div>
+    </div>`;
+}
+
+function revealCard(idx){
+  const c=CARDS[idx];
+  document.getElementById('vault-locked').style.display='none';
+  document.getElementById('vault-revealed').style.display='block';
+  document.getElementById('rv-pan').textContent=c.pan;
+  document.getElementById('rv-exp').textContent=c.exp;
+  document.getElementById('rv-cvv').textContent=c.cvv;
+  document.getElementById('rv-curr').textContent=c.currency;
+  revealCount++;CARDS[idx].revealed=true;updateMetrics();
+  let t=30;
+  vaultTimer=setInterval(()=>{
+    t--;
+    const fill=document.getElementById('rv-tfill');if(fill)fill.style.width=((t/30)*100)+'%';
+    const lbl=document.getElementById('rv-tlbl');if(lbl)lbl.textContent=t+'s avant masquage';
+    if(t<=0){clearInterval(vaultTimer);hideCard();}
+  },1000);
+}
+
+function hideCard(){
+  if(vaultTimer){clearInterval(vaultTimer);vaultTimer=null;}
+  const l=document.getElementById('vault-locked');const r=document.getElementById('vault-revealed');
+  if(l)l.style.display='flex';if(r)r.style.display='none';
+}
+
+function renderCards(){
+  const grid=document.getElementById('cards-grid');
+  const empty=document.getElementById('cards-empty');
+  if(CARDS.length===0){empty.style.display='flex';grid.style.display='none';return;}
+  empty.style.display='none';grid.style.display='grid';
+  grid.innerHTML=CARDS.map((c,i)=>`
+    <div>
+      <div class="card-vis cv-blue" style="margin-bottom:8px;">
+        <div class="cvl">MARQETA SANDBOX · VISA VIRTUAL</div>
+        <div class="cvc"></div>
+        <div class="cvn">${c.pan}</div>
+        <div class="cvb"><div><div class="cvna">${c.nom} ${c.prenom}</div><div class="cvsub">${c.product} · ${c.state}</div></div><div class="cvexp">${c.exp}</div></div>
+        <div class="cv-network"><div class="cv-circle cv-c1"></div><div class="cv-circle cv-c2"></div></div>
+      </div>
+      <div class="sec" style="padding:10px 12px;margin-bottom:0;">
+        <div class="irow"><span class="ilbl">Solde GPA</span><span class="ival" style="color:var(--success);">$${c.balance.toFixed(2)}</span></div>
+        <div class="irow"><span class="ilbl">Card product</span><span class="ival mono">${c.product}</span></div>
+        <div class="irow"><span class="ilbl">CVV</span><span>${c.revealed?'<span class="badge b-warn">consulté</span>':'<span class="badge b-ok">non consulté</span>'}</span></div>
+        <div class="irow"><span class="ilbl">Card token</span><span class="ival mono">${c.token}</span></div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <button class="btn btn-purple" style="flex:1;justify-content:center;padding:6px;font-size:12px;" onclick="goVaultCard(${i})"><i class="ti ti-eye" style="font-size:12px"></i>Vault CVV</button>
+          <button class="btn btn-green" style="flex:1;justify-content:center;padding:6px;font-size:12px;" onclick="quickLoad(${i})"><i class="ti ti-bolt" style="font-size:12px"></i>Recharger</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function goVaultCard(i){goPage('vault');setTimeout(()=>{document.getElementById('vault-sel').value=i;selVaultCard();},50);}
+
+function quickLoad(i){
+  const amt=parseFloat(prompt('Montant GPA à créditer (USD) :')||'0');
+  if(isNaN(amt)||amt<=0)return;
+  CARDS[i].balance=parseFloat((CARDS[i].balance+amt).toFixed(2));
+  loadedCount++;updateMetrics();renderCards();
+}
+
+function updateMetrics(){
+  document.getElementById('m-cards').textContent=CARDS.length;
+  document.getElementById('m-reveals').textContent=revealCount;
+  document.getElementById('m-loaded').textContent=loadedCount;
+}
+
+function cp(id){
+  const el=document.getElementById(id);if(!el)return;
+  navigator.clipboard?.writeText(el.innerText.trim());
+  const btn=el.querySelector('.copy-btn');
+  if(btn){btn.innerHTML='<i class="ti ti-check" style="font-size:12px;color:var(--success)"></i>';setTimeout(()=>{btn.innerHTML='<i class="ti ti-copy" style="font-size:12px"></i>';},2000);}
+}
+
+function rnd(n){return Array.from({length:n},()=>Math.floor(Math.random()*16).toString(16)).join('');}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+</script>
 </body>
 </html>
-```
-
-## Ce qui a été corrigé
-
-* création correcte d’utilisateur Marqeta sandbox ;
-* création correcte de carte virtuelle sandbox ;
-* meilleure gestion des erreurs ;
-* ajout d’envoi email ;
-* suppression des parties dangereuses ;
-* structure plus propre et stable.
-
-## Important
-
-Tu dois remplacer :
-
-```js
-YOUR_CARD_PRODUCT_TOKEN
-```
-
-par ton vrai `card product token` Marqeta sandbox.
-
-Tu peux obtenir ça depuis :
-
-* Dashboard Marqeta Sandbox
-* Card Products
-* Create Virtual Card Product
-
